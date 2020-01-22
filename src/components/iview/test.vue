@@ -59,8 +59,7 @@
     </Form>
 </template>
 <script>
-  import 'view-design/dist/styles/iview.css';
-  //Vue.use(ViewUI);
+  import '../../iview/index';
 
     export default {
         data () {
