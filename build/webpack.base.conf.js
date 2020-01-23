@@ -35,27 +35,32 @@ module.exports = {
     rules: [
       {
         test: /\.vue$/,
-        loader: 'vue-loader',
-        options: vueLoaderConfig
-        // use: [
-        //   {
-        //       loader: 'vue-loader',
-        //       options: {
-        //         vueLoaderConfig
-        //       }
-        //   },
-        //   {
-        //       loader: 'iview-loader',
-        //       options: {
-        //           prefix: false
-        //       }
-        //   }
-        // ]
+        // loader: 'vue-loader',
+        // options: vueLoaderConfig
+        use: [
+          {
+              loader: 'vue-loader',
+              options: {
+                vueLoaderConfig
+              }
+          },
+          {
+              loader: 'iview-loader',
+              options: {
+                  prefix: false
+              }
+          }
+        ]
       },
       {
         test: /\.js$/,
         loader: 'babel-loader',
-        include: [resolve('src'), resolve('test'), resolve('node_modules/webpack-dev-server/client')]
+        include: [resolve('src'), resolve('test'), resolve('node_modules/webpack-dev-server/client')
+        ,resolve('node_modules/iview/src')],
+        
+        options:{
+          presets:['es2015']
+        }
       },
       {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
