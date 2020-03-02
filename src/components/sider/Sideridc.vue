@@ -1,40 +1,32 @@
 
 <template >
     <div>
-        <!-- <MenuItem @click.native="clklabel('tab0')"  name="1-1">
+        <MenuItem name="sideridc-1" >
+          <router-link to="/servers" tag="div"  >
             <Icon type="ios-keypad"></Icon>
-            <router-link to="/page1" tag="span">Option 2-1</router-link>
-        </MenuItem> -->
-        <MenuItem name="2-1" >
-          <router-link to="/page1" tag="div"  >
-            <Icon type="ios-keypad"></Icon>
-            <span>Option 2-1</span>
+            <span>--设备列表</span>
           </router-link>
         </MenuItem>
-        <MenuItem name="2-2"  >
-          <router-link to="/page2" tag="div" >
+        <MenuItem name="sideridc-2"  >
+          <router-link to="/tasks" tag="div" >
             <Icon type="ios-search"></Icon>
-            <span>Option 2-2</span>
+            <span>--任务列表</span>
           </router-link>
         </MenuItem>
-        <MenuItem name="2-3"  >
-          <router-link to="/page2" tag="div" >
+        <MenuItem name="sideridc-3"  >
+          <router-link to="/report" tag="div" >
             <Icon type="ios-settings"></Icon>
-            <span>Option 2-3</span>
+            <span>--工作报表</span>
           </router-link>
         </MenuItem>
-        <!-- <MenuItem @click.native="clklabel('tab2')" name="1-3">
-            <Icon type="ios-settings"></Icon>
-            <span>Option 2-3</span>
-        </MenuItem> -->
-        <!-- <router-link to="/page1" tag="MenuItem" name="1-3">
-        </router-link> -->
+
         
         <MenuItem name="1-4" >
-          <Icon type="ios-settings"><router-link to="/page1" ></router-link></Icon>
+        <router-link to="/page2" tag="div">
+          <Icon type="ios-settings"></Icon>
           
-          <router-link to="/page1" tag="span">Option 2-4</router-link>
-          <!-- <span>Option 2-3</span> -->
+          <span>测试页</span>
+        </router-link>
         </MenuItem>
         
     </div> 
@@ -49,14 +41,6 @@ export default{
             
         }
     },
-    // computed:{
-    //     menuitemClasses () {
-    //         return [
-    //             'menu-item',
-    //             this.isCollapsed ? 'collapsed-menu' : ''
-    //             ]
-    //         }
-    //     },
     methods:{
         clklabel(item){
             this.$store.commit('showpg',item)

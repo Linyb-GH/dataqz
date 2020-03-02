@@ -1,17 +1,34 @@
 <template>
 <Tabs ref="contents" type="card"  >
   <!-- <router-view></router-view> -->
-  <TabPane label="page1" key="page1" >
+  <TabPane label="任务列表" key="任务列表" >
     <Table border :columns="columns6" :data="data5"></Table>
     <button>测试分页</button>
   </TabPane>
+  <TabPane label="新建任务" key="新建任务" >
+
+    <Button type="primary" @click="newTask('设备上架')" class="rightspace">设备上架</Button> 
+
+    <Button type="primary" @click="newTask('布线')">布线</Button>
+  </TabPane>
+
+  <TabPane v-for="(tab,index) in tabs" :key=tab+index :label="tab">
+    <NewTask :message = tab></NewTask>
+  </TabPane>
+
 </Tabs>
 </template>
 
 <script>
+import NewTask from '../components/tasks/new'
+
 export default {
+  components:{
+    NewTask
+  },
   data () {
     return {
+      tabs:[],
       columns6: [
         {
           title: 'Date',
@@ -95,8 +112,8 @@ export default {
         
     },
   methods: {
-    handleTabRemove (name) {
-      this.show = false;
+    newTask(name) {
+      this.tabs.splice(this.tabs.length,0,name);
     }
   },
   // created(){
@@ -104,3 +121,9 @@ export default {
   // }
 }
 </script>
+
+<style scoped>
+  .rightspace{
+    margin-right: 10px;
+  }
+</style>

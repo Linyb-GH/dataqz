@@ -1,7 +1,10 @@
 <template>
-  <TabPane label="home" key="home"  v-if="true">
+  <!-- <TabPane label="home" key="home"  v-if="true">
     <p>this is home page</p>
-  </TabPane>
+  </TabPane> -->
+  <div>
+    this is home page
+  </div>
 </template>
 
 <script>

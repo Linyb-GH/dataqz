@@ -75,11 +75,11 @@
                       </MenuItem>
                       <MenuItem name="2" @click.native="showheader('2')">
                         <Icon type="ios-keypad"></Icon>
-                        Item 2
+                        EC机房服务器
                       </MenuItem>
                       <MenuItem name="3" @click.native="showheader('3')">
                         <Icon type="ios-analytics"></Icon>
-                        Item 3
+                        备案记录
                       </MenuItem>
                       <MenuItem name="4">
                         <Icon type="ios-paper"></Icon>

@@ -1,9 +1,12 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
-import page1 from '../views/page1'
 import page2 from '../views/page2'
-import home from '../components/content/home'
+
+const tasks = () => import('../views/tasks')
+const report = () => import('../views/report')
+const servers = () => import ('../views/servers')
+const serversinfo = () => import ('../components/servers/info')
 // 1.安装插件
 Vue.use(VueRouter)
 
@@ -14,30 +17,30 @@ const routes = [
     redirect: '/home'
   },
   {
-    path: '/page1',
-    name:'page1',
-    // components:{
-    //   page1:page1,
-    // },
-    // meta:{
-    //   keepAlive:true
-    // }
-    component: page1
-  },
-  {
-    path: '/home',
-    name:'home',
-    component: home
-  },
-  {
     path: '/page2',
     name:'page2',
     component: page2
   },
-//   {
-//     path: '/profile',
-//     component: Profile
-//   }
+  {
+    path: '/servers',
+    component: servers,
+    childern:[
+      {
+        path:'/info',
+        component:serversinfo
+      }
+    ]
+  },
+  {
+    path: '/tasks',
+    name:'tasks',
+    component: tasks
+  },
+  {
+    path: '/report',
+    name:'report',
+    component: report
+  },
 ]
 const router = new VueRouter({
   routes,
