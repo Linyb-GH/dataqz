@@ -2,15 +2,18 @@
 
   <div>
     <Collapse v-model="value1">
-      <Panel name="1">
+      <Panel name='1'>
         设备信息
-        <p slot="content"> 
-          设备编号：{{message[0].number}}----------设备名称：{{message[0].name}}<br>
+        <div slot="content"> 
+          设备编号：{{message[0].number}}----------设备名称：{{message[0].name}}<span class="right">haha</span><br>
           设备类型：{{message[0].types}}----------设备大小：{{message[0].size}} U<br>
           所属系统：{{message[0].system}}----------所属分区：{{message[0].systemarea}}<br>
           机房位置：{{message[0].location1}}----------机柜位置：{{message[0].location2}}<br>
-          上架时间：{{message[0].date}}----------百度连接：<a href="http://www.baidu.com" target="_black">百度链接</a><br>
-        </p>
+          序列号：{{message[0].serial}}----------上架时间：{{message[0].date}}<br>
+          BMC登录：<a :href="BMClogin" target="_black">{{message[0].bmcip}}</a>---------
+          BMC账号：{{message[0].bmclogin}}<br>
+          固资编号：{{message[0].gnumber}}------------功耗：{{message[0].power}}
+        </div>
       </Panel>
       <Panel name="2">
         设备端口信息
@@ -37,15 +40,24 @@ export default {
   ],
   data () {
     return {
+      BMClogin:'https://',
       tabs:["abc","def"],
       value1: '1'
     }
   },
-  // created:{
-
-  // },
+  mounted(){
+    this.BMClogin = this.BMClogin + this.message[0].bmcip
+    console.log(this.BMClogin)
+  },
   methods: {
     
   }
 }
 </script>
+
+<style scoped>
+  .right{
+    text-align: right;
+    margin:0px 10px;
+  }
+</style>

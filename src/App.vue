@@ -103,7 +103,7 @@
       components:{Sideridc,Sidercloud,Content},
         data () {
             return {
-                showsider:"3",
+                showsider:"2",
                 isCollapsed: false
             }
         },

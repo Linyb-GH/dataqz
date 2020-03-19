@@ -1,11 +1,13 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import axios from 'axios'
 
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
     state:{
         tatedata:'I am test data for store',
+        taskdata:{},
         showcurrent:[],
         showpage:[
             {label:'2-1测试页',tabname:'tab0',isshow:true},
@@ -14,15 +16,10 @@ const store = new Vuex.Store({
         ]
     },
     mutations:{
+        storetest(state,input){
+            state.tatedata = input
+        },
         showpg(state,show){
-            
-            
-            // console.log(state.showcurrent)
-            // let t = state.showcurrent.forEach(
-            //     item => {item == show
-            //             // state.showcurrent.splice(state.showcurrent.length,0,show)
-            //     console.log('item:'+item+'--- show:'+show)}
-            // )
             let exist = state.showcurrent.indexOf(show)
             if(exist == -1) state.showcurrent.splice(state.showcurrent.length,0,show)
             console.log('store -show '+state.showcurrent)
@@ -30,20 +27,30 @@ const store = new Vuex.Store({
         closepg(state,closelabel){
             state.showcurrent.splice(closelabel,1)
             console.log('store - close'+state.showcurrent)
-            // state.showpage.forEach(
-            //     item =>{
-            //         if(item.tabname == closelabel){
-            //             item.isshow = false
-            //             console.log(item.tabname+'----'+item.isshow)
-            //         }
-            //     }
-            // )
-            // state.showpage[0].isshow = false
-            // console.log(closelabel)
+
+        },
+        taskgetlist(state,data){
+            state.taskdata.tasklist = data
         }
     },
     actions:{
+        storetest(context,arg){
+            context.commit('storetest',arg)
+        },
+        taskgetlist(context){
+            axios({
+                method:'get',
+                url:'http://localhost/ecserver/index.php/tasks',
+                params:{action:'showtasks'},
+                // data,
+                timeout:1000
+              }).then(res=>{
+                // this.data5 = res.data.message;
+                context.commit('taskgetlist',res)
+                // console.log(this.data5);
+              })
 
+        }
     }
 })
 

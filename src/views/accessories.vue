@@ -1,9 +1,9 @@
 <template>
-<Tabs ref="page1" type="card" :value="tabs.clabel"  @on-click="tabclick" @on-tab-remove="closelabel">
+<Tabs ref="accessories" type="card" :value="tabs.clabel"  @on-click="tabclick" @on-tab-remove="closelabel">
   <!-- <router-view></router-view> -->
   <TabPane label="配件列表" key="Home" name='home'>
     
-    <Table border :columns="columns" :data="data5"></Table>
+    <Table size="small" border :columns="columns" :data="data5"></Table>
  
   </TabPane>
   <TabPane label="Action" key="Action" name='Action'>
@@ -18,9 +18,10 @@
 </template>
 
 <script>
-
+  import axios from 'axios'
 
 export default {
+
   components:{
    
   },
@@ -62,7 +63,7 @@ export default {
         },
         {
           title: '数量',
-          key: 'num',
+          key: 'amount',
           
         },
         {
@@ -88,7 +89,16 @@ export default {
     }
   },
   mounted(){
-
+    axios({
+      method:'get',
+      url:'http://localhost/ecserver/index.php/accessories',
+      params:{action:'getlist'},
+      // data,
+      timeout:1000
+    }).then(res=>{
+      this.data5 = res.data.message;
+      console.log(res);
+    })
   },
   computed:{
 

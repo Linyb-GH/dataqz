@@ -1,6 +1,10 @@
 # tabbar
-#测试一下
-> A Vue.js project
+
+## git 仓库提交
+
+git add .  
+git commit -m "first commit"
+git push
 
 ## Build Setup
 

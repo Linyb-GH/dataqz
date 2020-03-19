@@ -3,10 +3,12 @@ import VueRouter from 'vue-router'
 
 import page2 from '../views/page2'
 
+const accessories = ()=>import('../views/accessories')
 const tasks = () => import('../views/tasks')
 const report = () => import('../views/report')
 const servers = () => import ('../views/servers')
 const serversinfo = () => import ('../components/servers/info')
+
 // 1.安装插件
 Vue.use(VueRouter)
 
@@ -15,6 +17,11 @@ const routes = [
   {
     path: '',
     redirect: '/home'
+  },
+  {
+    path:'/accessories',
+    name:'accessories',
+    component:accessories
   },
   {
     path: '/page2',

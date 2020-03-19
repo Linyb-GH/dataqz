@@ -30,7 +30,7 @@
                   </RadioGroup>
                 </FormItem>
                 <div style="display:flex">
-                  <FormItem label="取用场所" value="store">
+                  <FormItem label="配件取用" value="store">
                     <RadioGroup v-model="fetchdate">
                       <Radio label="store">仓库</Radio>
                       <Radio label="other">其它</Radio>

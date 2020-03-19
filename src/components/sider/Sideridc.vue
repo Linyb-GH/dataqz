@@ -9,17 +9,24 @@
         </MenuItem>
         <MenuItem name="sideridc-2"  >
           <router-link to="/tasks" tag="div" >
-            <Icon type="ios-search"></Icon>
+            <!-- <Icon type="ios-search"></Icon> -->
+            <Icon type="ios-keypad"></Icon>
             <span>--任务列表</span>
           </router-link>
         </MenuItem>
         <MenuItem name="sideridc-3"  >
-          <router-link to="/report" tag="div" >
-            <Icon type="ios-settings"></Icon>
-            <span>--工作报表</span>
-          </router-link>
+            <router-link to="/accessories" tag="div" >
+            <!-- <Icon type="ios-settings"></Icon> -->
+            <Icon type="ios-keypad"></Icon>
+            <span>--配件库存</span>
+            </router-link>
         </MenuItem>
-
+        <MenuItem name="sideridc-4"  >
+            <router-link to="/report" tag="div" >
+            <Icon type="ios-keypad"></Icon>
+            <span>--工作报表</span>
+            </router-link>
+        </MenuItem>
         
         <MenuItem name="1-4" >
         <router-link to="/page2" tag="div">

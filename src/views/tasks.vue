@@ -1,26 +1,36 @@
 <template>
-<Tabs ref="contents" type="card"  >
+<Tabs ref="tasks" type="card" :value="tabs.clabel"  @on-click="tabclick" @on-tab-remove="closelabel">
   <!-- <router-view></router-view> -->
-  <TabPane label="任务列表" key="任务列表" >
-    <Table border :columns="columns6" :data="data5"></Table>
-    <button>测试分页</button>
+  <TabPane label="任务列表" key="任务列表" name='home'>
+    <Table border :columns="columns" :data="data5" >
+      <template slot-scope="{ row, index }"  slot="action">
+        <Button type="primary" size="small" style="margin-right: 5px" @click="Continue(index)">继续</Button>
+        <!-- <Button type="error" size="small" style="margin-right: 5px" @click="Delete(index)">删除</Button> -->
+        <Poptip placement="left-end"
+          confirm
+          @on-ok="Delete(index)"
+          @on-cancel="Cancel">
+          <Button type="error" size="small" style="margin-right: 5px">删除</Button>
+        </Poptip>
+      </template>
+    </Table>
   </TabPane>
-  <TabPane label="新建任务" key="新建任务" >
+  <TabPane label="新建任务" key="新建任务" name='new'>
 
     <Button type="primary" @click="newTask('设备上架')" class="rightspace">设备上架</Button> 
 
     <Button type="primary" @click="newTask('布线')">布线</Button>
   </TabPane>
 
-  <TabPane v-for="(tab,index) in tabs" :key=tab+index :label="tab">
-    <NewTask :message = tab></NewTask>
+  <TabPane closable v-for="(tab,index) in tabs.labels" :name="tab.label" :key=tab.label+index :label="tab.label">
+    <NewTask :message = tab.data></NewTask>
   </TabPane>
-
 </Tabs>
 </template>
 
 <script>
 import NewTask from '../components/tasks/new'
+import axios from 'axios'
 
 export default {
   components:{
@@ -28,97 +38,152 @@ export default {
   },
   data () {
     return {
-      tabs:[],
-      columns6: [
+      // tabs:[],//新增显示的标签页标题
+      tabs:{
+        clabel:'',
+        labels:[],
+      },
+      columns: [
         {
-          title: 'Date',
-          key: 'date'
+          title: '创建时间',
+          key: 'creat_time'
         },
         {
-            title: 'Name',
-            key: 'name'
+            title: '任务ID',
+            key: 'id_random'
         },
         {
-            title: 'Age',
-            key: 'age',
-            filters: [
-                {
-                    label: '大于 25',
-                    value: 1
-                },
-                {
-                    label: '小于 25',
-                    value: 2
-                }
-            ],
-            filterMultiple: false,
-            filterMethod (value, row) {
-                if (value === 1) {
-                    return row.age > 25;
-                } else if (value === 2) {
-                    return row.age < 25;
-                }
-            }
-        },
-        {
-          title: 'Address',
-          key: 'address',
+          title: '任务类型',
+          key: 'showtype',
           filters: [
               {
-                  label: 'New York',
-                  value: 'New York'
+                  label: '设备上架',
+                  value: '设备上架'
               },
               {
-                  label: 'London',
-                  value: 'London'
+                  label: '布线',
+                  value: '布线'
               },
               {
-                  label: 'Sydney',
-                  value: 'Sydney'
+                  label: '其它',
+                  value: '其它'
               }
             ],
           filterMethod (value, row) {
-              return row.address.indexOf(value) > -1;
+              return row.showtype.indexOf(value) > -1;
           }
+        },
+        {
+          title: '当前进度',
+          key: 'currentstp'
+        },
+        {
+          title: '操作',
+          slot: 'action',
+          width: 150,
+          align: 'center'
         }
-    ],
-    data5: [
-        {
-            name: 'John Brown',
-            age: 18,
-            address: 'New York No. 1 Lake Park',
-            date: '2016-10-03'
-        },
-        {
-            name: 'Jim Green',
-            age: 24,
-            address: 'London No. 1 Lake Park',
-            date: '2016-10-01'
-        },
-        {
-            name: 'Joe Black',
-            age: 30,
-            address: 'Sydney No. 1 Lake Park',
-            date: '2016-10-02'
-        },
-        {
-            name: 'Jon Snow',
-            age: 26,
-            address: 'Ottawa No. 2 Lake Park',
-            date: '2016-10-04'
-        }
-    ],
-}
-        
-    },
-  methods: {
-    newTask(name) {
-      this.tabs.splice(this.tabs.length,0,name);
+      ],
+    data5: [],
     }
   },
-  // created(){
-  //   this.$store.commit('showpg','page1')
-  // }
+  mounted(){
+  
+    axios({
+      method:'get',
+      url:'http://localhost/ecserver/index.php/tasks',
+      params:{action:'showtasks'},
+      // data,
+      timeout:1000
+    }).then(res=>{
+      this.data5 = res.data.message;
+      // console.log(this.data5);
+    })
+  },
+  computed:{
+    getlistdata(){
+      this.$store.dispatch('taskgetlist')
+      this.data5 = this.$store.state.taskdata.tasklist.data.message
+    }
+  },
+  methods: {
+    closelabel(index){
+
+      this.tabs.labels = this.tabs.labels.filter((item)=>item.label != index)
+
+      },
+    newTask(name) {
+      let ran = String(Math.ceil((Math.random()*10000)))
+
+      let tp
+      if(name == '设备上架') {tp = 'tasks_server'}
+      if(name == '布线') {tp = 'tasks_wiring'}
+      this.tabs.labels.push({label:name+ran,data:{id_random:ran,type:tp}})
+      this.tabs.clabel = name+ran
+    },
+    Continue(index){
+      let x = this.tabs.labels.filter(ret => ret.label == String(this.data5[index].id_random))
+      console.log(x)
+      if(x.length == 0){
+        let lab = String(this.data5[index].id_random)
+        let stp = this.data5[index].showtype
+        let id = this.data5[index].id_random
+        let ct = this.data5[index].creat_time
+        let gtp = this.data5[index].gettype
+        this.tabs.labels.push({label:lab,data:{id_random:id,creat_time:ct,type:gtp}})
+        // this.tabs.labels.push({label:lab,data:[stp,gtp,id,ct]})
+        this.tabs.clabel = lab
+        // this.tabs.labels.push(lab)
+        // this.tabs.clabel = lab
+        // this.tasks.new = this.data5[index].showtype
+        // this.Cdata(index)
+        // this.tabs.labels.push({label:'hae',data:['ah','fei','fei']})
+
+      }else{
+        this.tabs.clabel = String(this.data5[index].id_random)
+      }
+      
+    },
+    Delete(index){
+      axios({
+      method:'get',
+      url:'http://localhost/ecserver/index.php/tasks',
+      params:{
+        action:'deletetask',
+        id_random:this.data5[index].id_random,
+        creat_time:this.data5[index].creat_time,
+        type:this.data5[index].gettype
+        },
+      // data,
+      timeout:1000
+      }).then(res=>{
+        console.log(res)
+        this.data5.splice(index,1)
+      })
+      
+    },
+    Cancel(){
+      this.$Message.info('You click cancel--')
+    },
+    tabclick(index){
+      if(index == 'home'){
+        axios({
+          method:'get',
+          url:'http://localhost/ecserver/index.php/tasks',
+          params:{action:'showtasks'},
+          // data,
+          timeout:1000
+        }).then(res=>{
+          this.data5 = res.data.message;
+          
+        })
+        this.tabs.clabel = 'home'
+      }
+      // console.log(this.tabs)
+
+    }
+  },
+
 }
 </script>
 

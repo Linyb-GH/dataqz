@@ -1,7 +1,6 @@
 <template>
-<Tabs ref="contents" type="card"  >
-
-  <TabPane label="设备列表" key="设备列表" >
+<Tabs ref="servers" type="card"   :value="tabs.clabel" @on-tab-remove="closelabel" >
+  <TabPane label="设备列表" key="设备列表" name="servers" >
     <Table border :columns="columns6" :data="data5" size="small">
       <template slot-scope="{ row, index }" slot="action">
         <Button type="primary" size="small" style="margin-right: 5px" @click="show(index)">详情</Button>
@@ -11,10 +10,19 @@
     <Page style="text-align:center;" :total="totalpage" @on-change="pagefunc" />
     <br>
   </TabPane>
+  <TabPane label="设备查找" key="设备查找">
+    <div class="searchsty">
+      <Input style="width:300px" @on-search="search" search enter-button="Search" placeholder="IP、名称、A#01 、固资编号" />
+      <CheckboxGroup v-model="searchfilter" style="margin:5px 10px">
+        <Checkbox label="3-2机房"></Checkbox>
+        <Checkbox label="1-2机房"></Checkbox>
+      </CheckboxGroup>
+    </div>
+    
+  </TabPane>
 
-  <TabPane v-for="tab in tabs" :key=tab :label="tab">
-    <p>{{tab}}</p>
-    <info :message="sendinfo"></info>
+  <TabPane v-for="(tab,index) in tabs.labels" :name="tab.label" :key="tab.label+index" :label="tab.label" closable>
+    <info :message = tab.data></info>
   </TabPane>
   
 </Tabs>
@@ -26,8 +34,12 @@ import axios from 'axios'
 export default {
   data () {
     return {
-      tabs:[],
-      sendinfo:[],
+      tabs:{
+        clabel:'',
+        labels:[]
+      },
+      sendinfo:['null'],
+      searchfilter:['3-2机房'],
       totalpage:10,
       page:1,
       columns6: [
@@ -42,46 +54,10 @@ export default {
         {
             title: '设备类别',
             key: 'types',
-            filters: [
-                {
-                    label: '服务器',
-                    value: '服务器'
-                },
-                {
-                    label: '交换机',
-                    value: '交换机'
-                },
-                {
-                    label: '防火墙',
-                    value: '防火墙'
-                }
-            ],
-            // filterMultiple: false,
-            filterMethod (value, row) {
-              // console.log('value:'+value+'--row:'+row.types)
-              return row.types.indexOf(value) > -1
-            }
         },
         {
           title: '所属平台',
           key: 'system',
-          filters: [
-              {
-                  label: 'New York',
-                  value: 'New York'
-              },
-              {
-                  label: 'London',
-                  value: 'London'
-              },
-              {
-                  label: 'Sydney',
-                  value: 'Sydney'
-              }
-            ],
-          filterMethod (value, row) {
-              return row.address.indexOf(value) > -1;
-          }
         },
         {
           title: '平台区域',
@@ -107,7 +83,7 @@ export default {
   created(){
 
       axios({
-        // url:'http://123.207.32.32:8000/home/multidata',
+
         url:'http://localhost/ecserver/index.php/servers',
         params:{
           page:this.page,
@@ -115,39 +91,42 @@ export default {
         },
         method:'get'
       }).then(res=>{
-        console.log(res.data);
+        // console.log(res.data);
         this.data5 = res.data.message.servers;
         this.totalpage = res.data.message.page;
         // this.totalpage = 12;
       })
-      // console.log(this.data5)
-      // return this.data5
-
-
   },
   methods: {
-    additem (name) { //新增标签页动作
-      console.log('test by servers'+name);
-      if(this.tabs.indexOf(name) == -1)
-        this.tabs.splice(this.tabs.length,0,name)
+    closelabel(index){
+      this.tabs.labels = this.tabs.labels.filter((item)=>item.label != index)
+    },
+    search (value) { //搜索
+      console.log(this.searchfilter)
+      console.log(value)
     },
     show(index){ //详情按钮
-      if(this.tabs.indexOf(this.data5[index].name) == -1){
-        this.tabs.splice(this.tabs.length,0,this.data5[index].name)
-      }
-      this.sendinfo = this.data5[index].name
-      axios({
+      let lab = this.data5[index].name
+      let x = this.tabs.labels.filter((item) =>  item.label == lab)
+      if(x.length == 0){
+        axios({
         url:'http://localhost/ecserver/index.php/servers',
         params:{
           action:'showinfo',
           server:this.data5[index].number
         },
       }).then(res=>{
-        this.sendinfo = res.data.message
+        // this.sendinfo = res.data.message
+        this.tabs.labels.push({label:lab,data:res.data.message})
+        this.tabs.clabel = lab
       })
+    }else{
+      this.tabs.clabel = lab
+    }
+
     },
     
-    pagefunc(page){
+    pagefunc(page){ //页面显示
 
       axios({
         url:'http://localhost/ecserver/index.php/servers',
@@ -164,3 +143,12 @@ export default {
 
 }
 </script>
+
+<style scoped>
+  .searchsty{
+    /* border: 1px solid #000;; */
+    display:flex;
+    margin: 0 10px;
+    /* width:900px; */
+  }
+</style>

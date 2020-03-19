@@ -1,7 +1,8 @@
 <template>
   <div>
-    <NewServer v-if="this.message == '设备上架'"></NewServer>
-    <Wiring v-if="this.message == '布线'"></Wiring>
+    <NewServer v-if="showtask('tasks_server')" :message = this.message></NewServer>
+    <Wiring v-if="showtask('tasks_wiring')"></Wiring>
+    <!-- <div >{{message}}</div> -->
   </div>
 
 </template>
@@ -22,10 +23,15 @@ export default {
       taskList:['newserver']
     }
   },
+  created(){
+    // console.log(this.message)
+  },
   methods:{
     showtask(taskname){
-      console.log(taskname)
-      return true
+      if(this.message.type == taskname){
+        return true
+      }
+      return false
     }
   }
 }
