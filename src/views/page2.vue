@@ -1,12 +1,14 @@
 <template>
 <Tabs ref="contents" type="card" :value="tabs.clabel" @on-tab-remove="closelabel" >
   <TabPane label="page2" name = 'page2'>
-    <p>this is page 2</p>
+
+    <Cascader :data="data4" :load-data="loadData"></Cascader>
     <button @click="buttontest">axios测试</button>
     <br>
     {{axiosdata}}
-    
+    <br><br><br><br><br><br><br><br><br>
   </TabPane>
+  
   <TabPane label="page2-1" name = 'page2-1'>
     <p>this is page 2-1</p>
     <p>{{this.$store.state.tatedata}}</p>
@@ -20,8 +22,9 @@
 </template>
 
 <script>
-import axios from 'axios';
-import Qs from 'qs'
+// import axios from 'axios';
+// import Qs from 'qs'
+import {request} from '../network/request'
 export default {
   data () {
     return {
@@ -30,8 +33,27 @@ export default {
         // label:['abc','hahah']
       },
       axiosdata:{},
-      // clabel:'page2',
-      // arr:['haha','oo']
+      data4: 
+      [
+        {
+          value: '3-2_A',
+          label: '3-2_A列',
+          children: [],
+          loading: false
+        },
+        {
+          value: '3-2_B',
+          label: '3-2_B列',
+          children: [],
+          loading:false
+        },
+        {
+          value: '1-2_A',
+          label: '1-2_A列',
+          children: [],
+          loading:false
+        },
+      ]
     }
   },
   mounted(){
@@ -39,12 +61,38 @@ export default {
     // this.tabs.label=['abc','hahah']
     this.tabs = {
       clabel:'page2',
-      label:['abc','haha']
+      label:['abc','haha'],
+      testarr:[]
     }
   },
   methods: {
     storetest(){
       this.$store.dispatch('storetest','abcdefg')
+    },
+    loadData (item, callback) {
+      item.loading = true;
+      axios({
+      method:'get',
+      url:'http://localhost/ecserver/index.php/servers',
+      params:{
+        action:'getjilianinfo',
+        column:item.value
+      },
+      // data,
+        timeout:5000
+      }).then(res=>{
+        let jilian = res.data;
+        item.children = jilian.message.children
+        console.log(jilian)
+        if(item.value == '3-2_A'){
+          // item.children = jilian.message.children
+        }else if(item.value == '3-2_B'){
+          console.log('B lie')
+        }
+        item.loading = false;
+        callback();
+      })
+      
     },
     labeltest(){
       let ran = String(Math.ceil((Math.random()*10000)))
@@ -56,25 +104,30 @@ export default {
       console.log(this.tabs)
     },
     buttontest(){
-      // this.tabs.splice(this.tabs.length,0,"add")
-    
-      var data = Qs.stringify({"recdata":['abc','def']});
-      
-      axios({
-      method:'get',
-      url:'http://localhost/ecserver/index.php/tasks',
-      params:{
-        action:'continue',
-        creat_time:'2020-03-05',
-        id_random:8881,
-        type:'tasks_server'
-      },
-      // data,
-        timeout:1000
+      request({
+        url:'/servers',
+        params:{
+          action:'showlist',
+          page: 1
+        }
       }).then(res=>{
-
         console.log(res)
       })
+      // var data = Qs.stringify({"recdata":['abc','def']});
+      
+      // axios({
+      // method:'get',
+      // url:'http://localhost/ecserver/index.php/servers',
+      // params:{
+      //   action:'showlist',
+      //   page: 1
+      // },
+      // // data,
+      //   timeout:1000
+      // }).then(res=>{
+      //   this.testarr = res.data;
+      //   console.log(this.testarr)
+      // })
       
     },
     closelabel(index){

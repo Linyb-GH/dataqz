@@ -4,90 +4,103 @@
     <div class="demo-split">
       <Split v-model="split1" min="40px">
         <div slot="left" class="demo-split-pane">
-          <div v-show="this.steps == 0">
+          <div v-show="this.steps == 0"><br>
             <div style="display:flex;">
-              <Cascader v-model="leftserver" :data="testdata" trigger="hover" class="left" placeholder="左边设备"></Cascader>
+              <Cascader v-model="formdata.ldevice" :load-data="loadData" :data="jiliandata" class="left" placeholder="左边设备"></Cascader>
               ---
-              <Cascader v-model="rightserver" :data="testdata" trigger="hover" class="right" placeholder="右边设备"></Cascader>
+              <Cascader v-model="formdata.rdevice" :load-data="loadData" :data="jiliandata" class="right" placeholder="右边设备"></Cascader>
             </div>
               <br>
               
-            <!-- <div style="display:flex;"> -->
-              <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
-                <div style="display:flex;">
-                <FormItem label="设备左：" prop="namel" style="margin-right:30px">
-                  <Input v-model="formValidate.namel" placeholder="端口编号" class="leftsmall" />
-                </FormItem>
-              
-                <FormItem label="设备右：" prop="namer" >
-                  <Input v-model="formValidate.namer" placeholder="端口编号" class="rightsmall" />
-                </FormItem>
-                </div>
-                <FormItem label="Type" prop="type">
-                  <RadioGroup v-model="formValidate.type">
-                    <Radio label="fiber">光纤</Radio>
-                    <Radio label="copper">铜线</Radio>
+            <Form ref="formValidate"  :label-width="80">
+              <div style="display:flex;">
+              <FormItem label="设备左：" prop="namel" style="margin-right:30px">
+                <Input v-model="formdata.lport" placeholder="端口编号" class="leftsmall" />
+              </FormItem>
+            
+              <FormItem label="设备右：" prop="namer" >
+                <Input v-model="formdata.rport" placeholder="端口编号" class="rightsmall" />
+              </FormItem>
+              </div>
+              <FormItem label="Type" prop="type">
+                <RadioGroup v-model="formdata.wiringtype">
+                  <Radio label="fiber">光纤</Radio>
+                  <Radio label="copper">铜线</Radio>
+                </RadioGroup>
+              </FormItem>
+              <FormItem v-show="formdata.wiringtype == 'fiber'" label="模块取用" prop="type">
+                <RadioGroup v-model="formdata.modulefetch">
+                  <Radio label="store">仓库</Radio>
+                  <Radio label="other">其它</Radio>
+                </RadioGroup>
+                <Select v-model="formdata.module" :disabled="formdata.modulefetch =='other'" style="width:100px">
+                  <Option v-for="(item,index) in selectdata.fibermodel" :value="item" :key="item+index">{{item}}</Option>
+                </Select>
+              </FormItem>
+              <div style="display:flex">
+                <FormItem label="铜线取用" v-if="this.formdata.wiringtype=='copper'">
+                  <RadioGroup v-model="formdata.wiringfetch">
+                    <Radio label="store">仓库</Radio>
+                    <Radio label="other">其它</Radio>
                   </RadioGroup>
+                  <Select v-model="formdata.wirelength" :disabled="formdata.wiringfetch=='other'" style="width:100px">
+                    <Option v-for="(item,index) in selectdata.copperwiring" :value="item" :key="item+index">{{item}}</Option>
+                  </Select>
                 </FormItem>
-                <div style="display:flex">
-                  <FormItem label="配件取用" value="store">
-                    <RadioGroup v-model="fetchdate">
-                      <Radio label="store">仓库</Radio>
-                      <Radio label="other">其它</Radio>
-                    </RadioGroup>
-                    <Select v-model="wirelength" :disabled="fetchdate=='other'" style="width:100px">
-                      <Option value="5">5米</Option>
-                      <Option value="10" disabled>10米</Option>
-                      <Option value="15">15米</Option>
-                    </Select>
-                  </FormItem>
-                </div>
-
-                <FormItem label="其它备注" >
-                  <Input v-model="remark" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="添加备注" />
+                <FormItem label="光纤取用" v-if="this.formdata.wiringtype=='fiber'">
+                  <RadioGroup v-model="formdata.wiringfetch">
+                    <Radio label="store">仓库</Radio>
+                    <Radio label="other">其它</Radio>
+                  </RadioGroup>
+                  <Select v-model="formdata.wirelength" :disabled="formdata.wiringfetch=='other'" style="width:100px">
+                    <Option v-for="(item,index) in selectdata.fiberwiring" :value="item" :key="item+index">{{item}}</Option>
+                  </Select>
                 </FormItem>
-
-              </Form>
+              </div>
+            </Form>
             <!-- </div> -->
           </div >
           <div v-show="this.steps == 1">
-            打印信息：<br>
-            {{leftserver[0]}}---{{rightserver}}
+            <br>
             <div>
-              <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
-                <RadioGroup v-model="usepaper">
+              <Form ref="formValidate" :label-width="80">
+                <RadioGroup v-model="formdata.tabpaperuse">
                   <Radio label="NotUse">无取用新标签纸</Radio>
                   <Radio label="Use">取用新标签纸</Radio>
                 </RadioGroup> 
-                <Select v-model="labelpaper" :disabled="usepaper=='NotUse'" style="width:100px">
-                  <Option value="5">5米</Option>
-                  <Option value="10" disabled>10米</Option>
-                  <Option value="15">15米</Option>
+                <Select v-model="formdata.tabpaper" 
+                  :disabled="formdata.tabpaperuse=='NotUse'" style="width:100px">
+                  <Option v-for="(item,index) in selectdata.tabpaper" :value="item" :key="item+index">{{item}}</Option>
+
                 </Select>
+                <br><br><br>
+                <FormItem label="其它备注" >
+                  <Input v-model="formdata.remark" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="添加备注" />
+                </FormItem>
               </Form>
             </div>
           </div>
           <br>
           <div class="buttons">
             <Button type="primary" @click="nextstep('back')">上一步</Button>
-            <Button type="success" @click="saveAction">保存</Button>
+            <Button type="success" @click="saveAction" :disabled="isfinish" >保存</Button>
             
             <Poptip
               confirm
-              title="确定要删除?"
+              title="点击完成后数据将更新到相关列表里，确定完成并提交数据?"
               @on-ok="ok"
               @on-cancel="cancel">
-              <Button type="warning">删除</Button>
+              <Button type="success" v-show="steps == 1" :disabled="isfinish">完成</Button>
             </Poptip>
             <Button type="primary" @click="nextstep('next')">下一步</Button>
           </div>
         </div>
         <div slot="right" class="demo-split-pane" >
           <Steps :current="steps" direction="vertical">
-          <Step title="对联信息" content="确定对联设备，接口描述为：设备号/板卡号/端口号"></Step>
-          <Step title="打印标签" content="在网线两端贴上一致的标签，如：A01核心交换机_22--B01服务器_01"></Step>
-          <Step title="布线" content="布线时一定要走理线架，不能直接穿过机柜；线要铺开不能答卷在一处"></Step>
-          <Step title="完成" content="测试连通性"></Step>
+          <Step title="对联信息" content="确定对联设备，接口描述为：设备号/板卡号/端口号。配件如果不是从仓库取件请选择其它"></Step>
+          <Step title="打印标签" content="在网线两端贴上一致的标签，如：A01核心交换机_22--B01服务器_01;
+          布线时一定要走理线架，不能直接穿过机柜；线要铺开不能答卷在一处"></Step>
+
           </Steps>
         </div>
       </Split>
@@ -97,87 +110,67 @@
 </template>
 
 <script>
-
+// import axios from 'axios';
+import {request} from '../../network/request'
+import Qs from 'qs';
 export default {
   props:[
     "message"
   ],
   data(){
     return{
+      formdata:{
+        ldevice:[],
+        rdevice:[],
+        tabpaperuse:'NotUse',
+        cdate:'',
+        lport:'',
+        rport:'',
+        wiringtype:'copper',
+        modulefetch:'other',
+        module:'',
+        wiringfetch: "store",
+        wirelength: "",
+        tabpaper: "",
+        currentstp: "1/2",
+        remark: "",
+      },
       split1: 0.75,
       steps:0,
-      fetchdate:'store',
-      usepaper:'NotUse',
-      labelpaper:0,
-      wirelength:0,
-      leftserver:[],
-      rightserver:[],
-      remark:'',
-      formValidate:{
-        namel:'',
-        namer:'',
-        type:'',
+      isfinish:false,
+      selectdata:{
+        tabpaper:[],
+        copperwiring:[],
+        fiberwiring:[],
+        fibermodel:[]
       },
-      ruleValidate: {
-        namel: [
-            { required: true, message: 'cannot be empty', trigger: 'blur' }
-        ],
-        namer: [
-            { required: true, message: 'cannot be empty', trigger: 'blur' }
-        ],
-        type: [
-            { required: true, message: 'cannot be empty', trigger: 'change' }
-        ],
-      },
-      testdata:[
+      jiliandata:
+      [
         {
-          value: 'beijing',
-          label: '北京',
-          children: [
-            {
-              value: 'gugong',
-              label: '故宫'
-            },
-            {
-              value: 'tiantan',
-              label: '天坛'
-            },
-            {
-              value: 'wangfujing',
-              label: '王府井'
-            }
-          ]
-        }, 
+          value: '3-2_A',
+          label: '3-2_A列',
+          children: [],
+          loading: false
+        },
         {
-          value: 'jiangsu',
-          label: '江苏',
-          children: [
-            {
-              value: 'nanjing',
-              label: '南京',
-              children: [
-              {
-                value: 'fuzimiao',
-                label: '夫子庙',
-              }]
-            },
-            {
-              value: 'suzhou',
-              label: '苏州',
-              children: [
-                {
-                  value: 'zhuozhengyuan',
-                  label: '拙政园',
-                },
-                {
-                  value: 'shizilin',
-                  label: '狮子林',
-                }
-              ]
-            }]
-        }
+          value: '3-2_B',
+          label: '3-2_B列',
+          children: [],
+          loading:false
+        },
+        {
+          value: '1-2_A',
+          label: '1-2_A列',
+          children: [],
+          loading:false
+        },
       ]
     }
+  },
+  created(){
+    // this.formdata.tabpaperuse='NotUse'
+    let cdate = new Date()
+    this.formdata.cdate = cdate.getFullYear() + "-" + (cdate.getMonth() + 1) + "-" + cdate.getDate()
   },
   methods:{
     nextstep(name){
@@ -187,16 +180,92 @@ export default {
         }      
       }
       if(name == 'next'){
-        if(this.steps<3){
+        if(this.steps<1){
           this.steps++
         }
       }
     },
+    loadData (item, callback) {
+      item.loading = true;
+      // axios({
+      // method:'get',
+      // url:'http://localhost/ecserver/index.php/servers',
+      // params:{
+      //   action:'getjilianinfo',
+      //   column:item.value
+      // },
+      // // data,
+      //   timeout:5000
+      // }).then(res=>{
+      //   let jilian = res.data;
+      //   item.children = jilian.message.children
+      //   console.log(item.label)
+      //   item.loading = false;
+      //   callback();
+      // }) 
+      request({
+        url:'/servers',
+        params:{
+          action:'getjilianinfo',
+          column:item.value
+        }
+      }).then(res=>{
+        let jilian = res.data
+        item.children = jilian.message.children
+        item.loading = false;
+        callback();
+      })
+    },
     saveAction(){
-      this.$Message.success('This is a success tip:'+this.rightserver);
+      this.$Message.success('This is a success tip:');
+      this.formdata.randomid = this.message.randomid
+      this.formdata.tasktype = this.message.type
+ 
+      this.formdata.currentstp = this.steps+1+"/2"
+      if(this.formdata.randomid == 'new' ){
+        this.formdata.randomid = this.message.id_random//(Math.ceil((Math.random()*10000)))
+      }
+      let data = Qs.stringify({"taskdata":this.formdata});
+      // console.log(this.formdata)
+      // axios({
+      //   method:'post',
+      //   url:'http://localhost/ecserver/index.php/tasks',
+      //   params:{action:'creattask'},
+      //   data,
+      //   timeout:1000
+      // }).then(res=>{
+      //   console.log(res);
+      // })
+      request({
+        method:'post',
+        url:'/tasks',
+        params:{action:'creattask'},
+        data,
+      }).then(res =>{
+        console.log(res)
+      })
     },
     ok(){
-      this.$Message.info('You click ok')
+      this.$Message.info('wiring task is ok')
+      let data = Qs.stringify({"taskdata":this.formdata});
+      // axios({
+      //   method:'post',
+      //   url:'http://localhost/ecserver/index.php/tasks',
+      //   params:{action:'taskfinish',type:'tasks_wiring'},
+      //   data,
+      //   timeout:1000
+      // }).then(res=>{
+      //   console.log(res);
+      // })
+      request({
+        method:'post',
+        url:'/tasks',
+        params:{action:'taskfinish',type:'tasks_wiring'},
+        data
+      }).then(res =>{
+        console.log(res)
+        this.isfinish = true
+      })
     },
     cancel(){
       this.$Message.info('You click cancel')
@@ -206,11 +275,84 @@ export default {
       console.log('run here')
     }
   },
+  mounted(){
+    // axios({
+    //   method:'get',
+    //   url:'http://localhost/ecserver/index.php/tasks',
+    //   params:{
+    //     action:'pageinit',
+    //     type:'tasks_wiring'
+    //   },
+    //   timeout:1000
+    // }).then(res=>{
+    //   this.selectdata = res.data.message
+    // })
+    request({
+      url:'/tasks',
+      params:{
+        action:'pageinit',
+        type:'tasks_wiring'
+      }
+    }).then(res =>{
+      // console.log(res)
+      this.selectdata = res.data.message
+    })
+
+    if(this.message.cdate != null){
+      // axios({
+      // method:'get',
+      // url:'http://localhost/ecserver/index.php/tasks',
+      // params:{
+      //   action:'continue',
+      //   cdate:this.message.cdate,
+      //   randomid:this.message.randomid,
+      //   type:'tasks_wiring'
+      // },
+      //   timeout:1000
+      // }).then(res=>{
+      //   let data = {}
+      //   data = res.data.message
+      //   this.steps = parseInt(data.currentstp.substr(0,1)) -1
+      //   if(data.ldevice){data.ldevice = data.ldevice.split(',')}
+      //   if(data.rdevice){data.rdevice = data.rdevice.split(',')}
+      //   this.formdata = data
+      // })
+      request({
+        url:'/tasks',
+        params:{
+          action:'continue',
+          cdate:this.message.cdate,
+          randomid:this.message.randomid,
+          type:'tasks_wiring'
+        }
+      }).then(res =>{
+        let data = {}
+        data = res.data.message
+        this.steps = parseInt(data.currentstp.substr(0,1)) -1
+        if(data.ldevice){data.ldevice = data.ldevice.split(',')}
+        if(data.rdevice){data.rdevice = data.rdevice.split(',')}
+        this.formdata = data
+      })
+    }else{
+      this.formdata.randomid = 'new'
+    }
+  },
   // watch:{
-  //   fetchdate(newName,oldName){
-  //     console.log(newName)
+  //   'formdata.wiringtype':{
+      // handler(newvalue,oldvalue){
+      //   if(newvalue == 'fiber'){
+      //     this.selectdata.wiring = this.selectdata.fiberwiring
+      //   }
+      //   if(newvalue == 'copper'){
+      //     this.selectdata.wiring = this.selectdata.copperwiring
+      //   }
+      //   console.log(this.selectdata)
+      // },
+      // deep: true,
+      // immediate: true
   //   }
   // }
+
 }
 
 </script>

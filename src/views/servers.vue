@@ -1,7 +1,7 @@
 <template>
 <Tabs ref="servers" type="card"   :value="tabs.clabel" @on-tab-remove="closelabel" >
   <TabPane label="设备列表" key="设备列表" name="servers" >
-    <Table border :columns="columns6" :data="data5" size="small">
+    <Table :columns="columns6" :data="data5" size="small">
       <template slot-scope="{ row, index }" slot="action">
         <Button type="primary" size="small" style="margin-right: 5px" @click="show(index)">详情</Button>
       </template>
@@ -30,7 +30,8 @@
 
 <script>
 import info from '../components/servers/info'
-import axios from 'axios'
+import {request} from '../network/request'
+// import axios from 'axios'
 export default {
   data () {
     return {
@@ -73,29 +74,35 @@ export default {
           width: 100,
           align: 'center'
         }
-    ],
-    data5: [],
+      ],
+      data5: [],
     }
   },
   components:{
     info
   },
   created(){
-
-      axios({
-
-        url:'http://localhost/ecserver/index.php/servers',
-        params:{
-          page:this.page,
-          action:'showlist'
-        },
-        method:'get'
-      }).then(res=>{
-        // console.log(res.data);
-        this.data5 = res.data.message.servers;
-        this.totalpage = res.data.message.page;
-        // this.totalpage = 12;
-      })
+    request({
+      url:'/servers',
+      params:{
+        page:this.page,
+        action:'showlist'
+      }
+    }).then(res =>{
+      this.data5 = res.data.message.servers
+      this.totalpage = res.data.message.page
+    })
+      // axios({
+      //   url:'http://localhost/ecserver/index.php/servers',
+      //   params:{
+      //     page:this.page,
+      //     action:'showlist'
+      //   },
+      //   method:'get'
+      // }).then(res=>{
+      //   this.data5 = res.data.message.servers;
+      //   this.totalpage = res.data.message.page;
+      // })
   },
   methods: {
     closelabel(index){
@@ -109,17 +116,27 @@ export default {
       let lab = this.data5[index].name
       let x = this.tabs.labels.filter((item) =>  item.label == lab)
       if(x.length == 0){
-        axios({
-        url:'http://localhost/ecserver/index.php/servers',
-        params:{
-          action:'showinfo',
-          server:this.data5[index].number
-        },
-      }).then(res=>{
-        // this.sendinfo = res.data.message
-        this.tabs.labels.push({label:lab,data:res.data.message})
-        this.tabs.clabel = lab
-      })
+        request({
+          url:'servers',
+          params:{
+            action:'showinfo',
+            server:this.data5[index].number
+          }
+        }).then(res =>{
+          this.tabs.labels.push({label:lab,data:res.data.message})
+          this.tabs.clabel = lab
+        })
+      //   axios({
+      //   url:'http://localhost/ecserver/index.php/servers',
+      //   params:{
+      //     action:'showinfo',
+      //     server:this.data5[index].number
+      //   },
+      // }).then(res=>{
+      //   // console.log(res)
+      //   this.tabs.labels.push({label:lab,data:res.data.message})
+      //   this.tabs.clabel = lab
+      // })
     }else{
       this.tabs.clabel = lab
     }
@@ -127,17 +144,25 @@ export default {
     },
     
     pagefunc(page){ //页面显示
-
-      axios({
-        url:'http://localhost/ecserver/index.php/servers',
+      request({
+        url:'servers',
         params:{
           page:page,
           action:'showlist'
-        },
-        method:'get'
-      }).then(res=>{
+        }
+      }).then(res =>{
         this.data5 = res.data.message.servers
       })
+      // axios({
+      //   url:'http://localhost/ecserver/index.php/servers',
+      //   params:{
+      //     page:page,
+      //     action:'showlist'
+      //   },
+      //   method:'get'
+      // }).then(res=>{
+      //   this.data5 = res.data.message.servers
+      // })
     }
   },
 

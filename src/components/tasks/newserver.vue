@@ -135,7 +135,8 @@
 </template>
 
 <script>
-  import axios from 'axios';
+import {request} from '../../network/request'
+  // import axios from 'axios';
   import Qs from 'qs';
 
 export default {
@@ -188,19 +189,27 @@ export default {
     saveAction(){
       this.$Message.success('This is a success tip');
       this.stpdata['currentstp'] = this.steps+1+"/4"
-      if(this.stpdata['id_random']== 'new' ){
-        this.stpdata['id_random'] = this.message.id_random//(Math.ceil((Math.random()*10000)))
+      if(this.stpdata['randomid']== 'new' ){
+        this.stpdata['randomid'] = this.message.randomid//(Math.ceil((Math.random()*10000)))
       }
       let data = Qs.stringify({"taskdata":this.stpdata});
-      axios({
+      request({
         method:'post',
-        url:'http://localhost/ecserver/index.php/tasks',
+        url:'/tasks',
         params:{action:'creatserver'},
-        data,
-        timeout:1000
-      }).then(res=>{
-        console.log(res);
+        data
+      }).then(res =>{
+        console.log(res)
       })
+      // axios({
+      //   method:'post',
+      //   url:'http://localhost/ecserver/index.php/tasks',
+      //   params:{action:'creatserver'},
+      //   data,
+      //   timeout:1000
+      // }).then(res=>{
+      //   console.log(res);
+      // })
     
     },
     ok(){
@@ -208,15 +217,23 @@ export default {
 
       this.isfinish = true
       let data = Qs.stringify({"taskdata":this.stpdata});
-      axios({
+      request({
         method:'post',
-        url:'http://localhost/ecserver/index.php/tasks',
+        url:'/tasks',
         params:{action:'taskfinish',type:'tasks_server'},
-        data,
-        timeout:1000
-      }).then(res=>{
-        console.log(res);
+        data
+      }).then(res =>{
+        console.log(res)
       })
+      // axios({
+      //   method:'post',
+      //   url:'http://localhost/ecserver/index.php/tasks',
+      //   params:{action:'taskfinish',type:'tasks_server'},
+      //   data,
+      //   timeout:1000
+      // }).then(res=>{
+      //   console.log(res);
+      // })
 
     },
     cancel(){
@@ -235,7 +252,7 @@ export default {
     }
     this.stpdata['system'] = '政务外网'
     let cdata = new Date()
-    this.stpdata['creat_time'] = cdata.getFullYear() + "-" + (cdata.getMonth() + 1) + "-" + cdata.getDate()
+    this.stpdata['cdate'] = cdata.getFullYear() + "-" + (cdata.getMonth() + 1) + "-" + cdata.getDate()
 
     
   },
@@ -243,35 +260,52 @@ export default {
     // let isempty = Object.keys(this.message.id_random) .length != 0
     // let isempty = this.message.id_random == null
     // console.log(this.message.id_random == null)
-    if(this.message.creat_time != null){
-      axios({
-      method:'get',
-      url:'http://localhost/ecserver/index.php/tasks',
-      params:{
-        action:'continue',
-        creat_time:this.message.creat_time,
-        id_random:this.message.id_random,
-        type:'tasks_server'
-      },
-      // data,
-        timeout:1000
-      }).then(res=>{
+    if(this.message.cdate != null){
+      request({
+        url:'/tasks',
+        params:{
+          action:'continue',
+          cdate:this.message.cdate,
+          randomid:this.message.randomid,
+          type:'tasks_server'
+        }
+      }).then(res =>{ 
         let data = []
         for(let i in res.data.message){//将对象转换成数组
           if(i == 'jigui'){data[i] = [res.data.message[i].substr(0,1),res.data.message[i].substr(2)];continue;}
           if(i == 'bmcip'){data['BMCip'] = res.data.message[i];continue}
           if(i == 'bmclogin') {data['BMClogin'] = res.data.message[i]; continue}
           if(i == 'currentstp'){data[i] = res.data.message[i].substr(0,1);continue}
-          data[i] = res.data.message[i]
-                   
+          data[i] = res.data.message[i]                  
         }
         this.steps = parseInt(data['currentstp']) -1
-        // console.log
         this.stpdata = data
-        console.log(data)
       })
+      // axios({
+      // method:'get',
+      // url:'http://localhost/ecserver/index.php/tasks',
+      // params:{
+      //   action:'continue',
+      //   cdate:this.message.cdate,
+      //   randomid:this.message.randomid,
+      //   type:'tasks_server'
+      // },
+      // // data,
+      //   timeout:1000
+      // }).then(res=>{
+      //   let data = []
+      //   for(let i in res.data.message){//将对象转换成数组
+      //     if(i == 'jigui'){data[i] = [res.data.message[i].substr(0,1),res.data.message[i].substr(2)];continue;}
+      //     if(i == 'bmcip'){data['BMCip'] = res.data.message[i];continue}
+      //     if(i == 'bmclogin') {data['BMClogin'] = res.data.message[i]; continue}
+      //     if(i == 'currentstp'){data[i] = res.data.message[i].substr(0,1);continue}
+      //     data[i] = res.data.message[i]                  
+      //   }
+      //   this.steps = parseInt(data['currentstp']) -1
+      //   this.stpdata = data
+      // })
     }else{
-      this.stpdata['id_random'] = 'new'
+      this.stpdata['randomid'] = 'new'
     }
 
   }

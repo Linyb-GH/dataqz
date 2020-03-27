@@ -3,7 +3,11 @@
   <!-- <router-view></router-view> -->
   <TabPane label="配件列表" key="Home" name='home'>
     
-    <Table size="small" border :columns="columns" :data="data5"></Table>
+    <Table size="small"  :columns="columns" :data="data5">
+      <template slot-scope="{ row, index }" slot="action">
+        <Button type="primary" size="small" style="margin-right: 5px" @click="show(index)">详情</Button>
+      </template>
+    </Table>
  
   </TabPane>
   <TabPane label="Action" key="Action" name='Action'>
@@ -12,18 +16,19 @@
   </TabPane>
 
   <TabPane closable v-for="(tab,index) in tabs.labels" :name="tab.label" :key=tab.label+index :label="tab.label">
-    <p>{{tab.data}}</p>
+    <Showinfo :fcolumns = tab.columns :message = tab.data></Showinfo>
   </TabPane>
 </Tabs>
 </template>
 
 <script>
-  import axios from 'axios'
-
+  // import axios from 'axios'
+  import {request} from '../network/request'
+  import Showinfo from '../components/common/tabshowmiddle'
 export default {
 
   components:{
-   
+   Showinfo
   },
   data () {
     return {
@@ -47,6 +52,10 @@ export default {
             {
               label: '光纤',
               value: '光纤'
+            },
+            {
+              label: '其他',
+              value: '其他'
             }
           ],
           filterMethod (value, row) {
@@ -64,15 +73,24 @@ export default {
         {
           title: '数量',
           key: 'amount',
+          width:'60px',
+          align:'center'
           
         },
         {
           title: '单位',
-          key: 'uint'
+          key: 'uint',
+          width:'60px'
         },
         {
           title: '存放位置',
           key: 'site'
+        },
+        {
+          title: 'Action',
+          slot: 'action',
+          width: 100,
+          align: 'center'
         }
       ],
       data5: [
@@ -86,24 +104,93 @@ export default {
         },
 
       ],
+      columnsinfo:[
+        {
+          title: '日期',
+          key: 'date',
+        },
+        {
+          title: '使用（购买）者',
+          key: 'user'
+        },
+        {
+          title: '方式',
+          key: 'modify',
+        },
+        {
+          title: '数量',
+          key: 'useamount',
+          width:'60px',
+          align:'center'
+          
+        },
+        {
+          title: '用途/来源',
+          key: 'usefor'
+        },
+        {
+          title: '当前剩余',
+          key: 'remainder'
+        },
+        {
+          title: '备注',
+          key: 'remark'
+        }
+      ],
     }
   },
   mounted(){
-    axios({
-      method:'get',
-      url:'http://localhost/ecserver/index.php/accessories',
-      params:{action:'getlist'},
-      // data,
-      timeout:1000
-    }).then(res=>{
+    request({
+      url:'accessories',
+      params:{action:'getlist'}
+    }).then(res =>{
       this.data5 = res.data.message;
-      console.log(res);
     })
+    // axios({
+    //   method:'get',
+    //   url:'http://localhost/ecserver/index.php/accessories',
+    //   params:{action:'getlist'},
+    //   // data,
+    //   timeout:1000
+    // }).then(res=>{
+    //   this.data5 = res.data.message;
+    //   console.log(res);
+    // })
   },
   computed:{
 
   },
   methods: {
+    show(index){
+      
+      let lab = this.data5[index].name+this.data5[index].id
+      let x = this.tabs.labels.filter((item) =>  item.label == lab)
+      if(x.length == 0){
+        request({
+          url:'accessories',
+          params:{
+            action:'getinfo',
+            id:this.data5[index].id
+          }
+        }).then(res =>{
+          this.tabs.labels.push({label:lab,columns:this.columnsinfo,data:res})
+          this.tabs.clabel = lab
+        })
+      //   axios({
+      //   url:'http://localhost/ecserver/index.php/accessories',
+      //   params:{
+      //     action:'getinfo',
+      //     id:this.data5[index].id
+      //   },
+      // }).then(res=>{
+      //   this.tabs.labels.push({label:lab,columns:this.columnsinfo,data:res})
+      //   this.tabs.clabel = lab
+      // })
+      }else{
+
+        // this.tabs.clabel = lab
+      }
+    },
     closelabel(index){
       this.tabs.labels = this.tabs.labels.filter((item)=>item.label != index)
     },

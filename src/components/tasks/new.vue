@@ -1,7 +1,8 @@
 <template>
   <div>
     <NewServer v-if="showtask('tasks_server')" :message = this.message></NewServer>
-    <Wiring v-if="showtask('tasks_wiring')"></Wiring>
+    <Wiring v-if="showtask('tasks_wiring')" :message = this.message></Wiring>
+    <Inspecting v-if="showtask('tasks_inspecting')" :message = this.message></Inspecting>
     <!-- <div >{{message}}</div> -->
   </div>
 
@@ -10,10 +11,12 @@
 <script>
 import NewServer from './newserver'
 import Wiring from './newwiring'
+import Inspecting from './newinspect'
 export default {
   components:{
     NewServer,
-    Wiring
+    Wiring,
+    Inspecting
   },
   props:[
     "message"
