@@ -1,14 +1,14 @@
 <template>
   <div>
     
-    <div class="demo-split">
+    <div class="wiring-split">
       <Split v-model="split1" min="40px">
-        <div slot="left" class="demo-split-pane">
+        <div slot="left" class="wiring-split-pane">
           <div v-show="this.steps == 0"><br>
             <div style="display:flex;">
-              <Cascader v-model="formdata.ldevice" :load-data="loadData" :data="jiliandata" class="left" placeholder="左边设备"></Cascader>
+              <Cascader v-model="formdata.ldevice" :load-data="loadData" :data="jiliandata" class="left" placeholder="服务器等应用设备"></Cascader>
               ---
-              <Cascader v-model="formdata.rdevice" :load-data="loadData" :data="jiliandata" class="right" placeholder="右边设备"></Cascader>
+              <Cascader v-model="formdata.rdevice" :load-data="loadData" :data="jiliandata" class="right" placeholder="交换机等网络设备"></Cascader>
             </div>
               <br>
               
@@ -71,8 +71,9 @@
                 <Select v-model="formdata.tabpaper" 
                   :disabled="formdata.tabpaperuse=='NotUse'" style="width:100px">
                   <Option v-for="(item,index) in selectdata.tabpaper" :value="item" :key="item+index">{{item}}</Option>
-
                 </Select>
+                <br><br>
+                IP地址: <Input v-model="formdata.ip" style="width:200px" placeholder="IP address" />
                 <br><br><br>
                 <FormItem label="其它备注" >
                   <Input v-model="formdata.remark" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="添加备注" />
@@ -95,7 +96,7 @@
             <Button type="primary" @click="nextstep('next')">下一步</Button>
           </div>
         </div>
-        <div slot="right" class="demo-split-pane" >
+        <div slot="right" class="wiring-split-pane" >
           <Steps :current="steps" direction="vertical">
           <Step title="对联信息" content="确定对联设备，接口描述为：设备号/板卡号/端口号。配件如果不是从仓库取件请选择其它"></Step>
           <Step title="打印标签" content="在网线两端贴上一致的标签，如：A01核心交换机_22--B01服务器_01;
@@ -133,6 +134,7 @@ export default {
         wirelength: "",
         tabpaper: "",
         currentstp: "1/2",
+        ip:'',
         remark: "",
       },
       split1: 0.75,
@@ -239,7 +241,7 @@ export default {
       request({
         method:'post',
         url:'/tasks',
-        params:{action:'creattask'},
+        params:{action:'creattask',type:'tasks_wiring'},
         data,
       }).then(res =>{
         console.log(res)
@@ -358,12 +360,12 @@ export default {
 </script>
 
 <style>
-  .demo-split{
+  .wiring-split{
     height: 400px;
     border: 1px solid #dcdee2;
     position: relative;
   }
-  .demo-split-pane{
+  .wiring-split-pane{
     padding: 10px;
   }
   .left{

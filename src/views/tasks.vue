@@ -18,10 +18,12 @@
   </TabPane>
   <TabPane label="新建任务" key="新建任务" name='new'>
 
+    <Button type="primary" @click="newTask('每天巡检')" class="rightspace">每天巡检</Button>
     <Button type="primary" @click="newTask('设备上架')" class="rightspace">设备上架</Button> 
-
     <Button type="primary" @click="newTask('布线')" class="rightspace">布线</Button>
-    <Button type="primary" @click="newTask('每天巡检')">每天巡检</Button>
+    <Button type="primary" @click="newTask('日常运维')" class="rightspace">日常运维</Button>
+    <Button type="primary" @click="newTask('配件变更')" class="rightspace">配件变更</Button>
+    <Button type="primary" @click="newTask('设备迁移')" class="rightspace">设备迁移</Button>
   </TabPane>
 
   <TabPane closable v-for="(tab,index) in tabs.labels" :name="tab.label" :key=tab.label+index :label="tab.label">
@@ -95,6 +97,7 @@ export default {
       url:'/tasks',
       params:{action:'showtasks'}
     }).then(res =>{
+      console.log(res)
       this.data5 = res.data.message;
     })
     // axios({
@@ -124,9 +127,12 @@ export default {
       let ran = String(Math.ceil((Math.random()*10000)))
 
       let tp
+      if(name == '每天巡检') {tp = 'tasks_inspecting'}
       if(name == '设备上架') {tp = 'tasks_server'}
       if(name == '布线') {tp = 'tasks_wiring'}
-      if(name == '每天巡检') {tp = 'tasks_inspecting'}
+      if(name == '设备迁移') {tp = 'tasks_moving'}
+      if(name == '日常运维') {tp = 'tasks_maintain'}
+      if(name == '配件变更') {tp = 'tasks_accessory'}
       this.tabs.labels.push({label:name+ran,data:{randomid:ran,type:tp}})
       this.tabs.clabel = name+ran
     },
@@ -159,6 +165,7 @@ export default {
         }
       }).then(res=>{
         this.data5.splice(index,1)
+        console.log(res)
       })
       // axios({
       // method:'get',
@@ -208,6 +215,6 @@ export default {
 
 <style scoped>
   .rightspace{
-    margin-right: 10px;
+    margin-right:10px;
   }
 </style>

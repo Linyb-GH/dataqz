@@ -12,7 +12,7 @@
             <br>
            
             上架位置：
-             <div class="flexsyt">
+            <div class="flexsyt">
             <Cascader :data="site" v-model="stpdata['jigui']" class="siteclass rightspace"></Cascader>
             所在机柜位置（1-42）：
             <InputNumber :max="42" :min="1" v-model="stpdata['site']"></InputNumber>
@@ -58,10 +58,10 @@
               </div>
               <div class="flexsyt">
                 <FormItem label="BMC IP" class="widthInput">
-                  <Input v-model="stpdata['BMCip']"/> 
+                  <Input v-model="stpdata['bmcip']"/> 
                 </FormItem>
                 <FormItem label="BMC 账号密码" class="widthInput">
-                  <Input v-model="stpdata['BMClogin']"/>
+                  <Input v-model="stpdata['bmclogin']"/>
                 </FormItem>
               </div>
               
@@ -74,7 +74,7 @@
             <br><br>
             <Form  label-position="left" :label-width="100">
               <FormItem label="上架日期" class="widthInput">
-                <Input v-model="stpdata['date']" placeholder="yyyy-mm-dd"/> 
+                <Input v-model="stpdata['date']" type="date" placeholder="yyyy-mm-dd"/> 
               </FormItem>
               <FormItem label="设备归属">
                 <RadioGroup v-model="stpdata['belong']">
@@ -84,11 +84,25 @@
                   <Radio label="其它情况">其它情况</Radio>
                 </RadioGroup>
               </FormItem>
+              <FormItem label="设备上架来源">
+                <RadioGroup v-model="stpdata['isfetch']">
+                  <Radio label="仓库取用">仓库取用</Radio>
+                  <Radio label="直接上架">直接上架</Radio>
+                </RadioGroup>
+              </FormItem>
             </Form>
           </div>
           <div v-show="this.steps == 3">
-            <br><br><br>
+            <br><br>
+            
+            <br>
             <Form  label-position="left" :label-width="100">
+              <FormItem label="是否巡检">
+                <RadioGroup v-model="stpdata['inspect']">
+                  <Radio label="加入巡检">加入巡检</Radio>
+                  <Radio label="其他">其他</Radio>
+                </RadioGroup>
+              </FormItem>
               <FormItem label="是否需要验收">
                 <RadioGroup v-model="stpdata['state']">
                   <Radio label="未验收">未验收</Radio>
@@ -182,38 +196,29 @@ export default {
           this.steps++
         }
         if(this.steps == 2){
-            this.bmctest+=this.stpdata['BMCip']
+            this.bmctest+=this.stpdata['bmcip']
           }
       }
     },
     saveAction(){
-      this.$Message.success('This is a success tip');
+      
       this.stpdata['currentstp'] = this.steps+1+"/4"
       if(this.stpdata['randomid']== 'new' ){
-        this.stpdata['randomid'] = this.message.randomid//(Math.ceil((Math.random()*10000)))
+        this.stpdata['randomid'] = this.message.randomid
       }
       let data = Qs.stringify({"taskdata":this.stpdata});
+      // console.log(this.stpdata)
       request({
         method:'post',
         url:'/tasks',
-        params:{action:'creatserver'},
+        params:{action:'creattask',type:'tasks_server'},
         data
       }).then(res =>{
+        this.$Message.success('保存成功');
         console.log(res)
-      })
-      // axios({
-      //   method:'post',
-      //   url:'http://localhost/ecserver/index.php/tasks',
-      //   params:{action:'creatserver'},
-      //   data,
-      //   timeout:1000
-      // }).then(res=>{
-      //   console.log(res);
-      // })
-    
+      })  
     },
     ok(){
-      this.$Message.info('servers data is update !')
 
       this.isfinish = true
       let data = Qs.stringify({"taskdata":this.stpdata});
@@ -223,6 +228,7 @@ export default {
         params:{action:'taskfinish',type:'tasks_server'},
         data
       }).then(res =>{
+        this.$Message.info('servers data is update !')
         console.log(res)
       })
       // axios({
@@ -273,8 +279,6 @@ export default {
         let data = []
         for(let i in res.data.message){//将对象转换成数组
           if(i == 'jigui'){data[i] = [res.data.message[i].substr(0,1),res.data.message[i].substr(2)];continue;}
-          if(i == 'bmcip'){data['BMCip'] = res.data.message[i];continue}
-          if(i == 'bmclogin') {data['BMClogin'] = res.data.message[i]; continue}
           if(i == 'currentstp'){data[i] = res.data.message[i].substr(0,1);continue}
           data[i] = res.data.message[i]                  
         }

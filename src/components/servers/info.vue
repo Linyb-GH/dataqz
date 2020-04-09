@@ -5,7 +5,7 @@
       <Panel name='1'>
         设备信息
         <div slot="content"> 
-          设备编号：{{message.info[0].number}}----------设备名称：{{message.info[0].name}}<span class="right">haha</span><br>
+          设备编号：{{message.info[0].number}}----------设备名称：{{message.info[0].name}}<span class="right"></span><br>
           设备类型：{{message.info[0].types}}----------设备大小：{{message.info[0].size}} U<br>
           所属系统：{{message.info[0].system}}----------所属分区：{{message.info[0].systemarea}}<br>
           机房位置：{{message.info[0].location1}}----------机柜位置：{{message.info[0].location2}}<br>
@@ -24,9 +24,14 @@
       </Panel>
       <Panel name="3">
         设备维修记录
-        <p slot="content">乔纳森·伊夫是一位工业设计师，现任Apple公司设计师兼资深副总裁，
-          英国爵士。他曾参与设计了iPod，iMac，iPhone，iPad等众多苹果产品。除了乔布斯，
-          他是对苹果那些著名的产品最有影响力的人。</p>
+        <div slot="content">
+          <p v-for="(tab,index) in message.maintain" :key=tab+index >
+            时间：{{tab.fdate}}--------------------------------------<br>
+            类型：{{tab.mtype}}----联系人：{{tab.contact}}<br>
+            过程描述：<br>
+            {{tab.myprocedure}}<br><br><br>
+          </p>
+        </div>
       </Panel>
     </Collapse>
 

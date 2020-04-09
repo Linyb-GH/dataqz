@@ -1,0 +1,23 @@
+.topmargin{
+  margin-top: 15px;
+}
+.leftmargin10{
+  margin-left: 10px;
+}
+
+.flexsty{
+  display: flex;
+}
+.buttons{
+  position: absolute;
+  padding: 10px;
+  bottom: 5px;
+}
+.common-split{
+  height: 400px;
+  border: 1px solid #dcdee2;
+  position: relative;
+}
+.common-split-pane{
+  padding: 10px;
+}

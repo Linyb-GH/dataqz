@@ -10,10 +10,10 @@
     </Table>
  
   </TabPane>
-  <TabPane label="Action" key="Action" name='Action'>
+  <!-- <TabPane label="Action" key="Action" name='Action'>
     action page
     <button @click="test">New-Label</button>
-  </TabPane>
+  </TabPane> -->
 
   <TabPane closable v-for="(tab,index) in tabs.labels" :name="tab.label" :key=tab.label+index :label="tab.label">
     <Showinfo :fcolumns = tab.columns :message = tab.data></Showinfo>
