@@ -18,12 +18,18 @@
   </TabPane>
   <TabPane label="新建任务" key="新建任务" name='new'>
 
-    <Button type="primary" @click="newTask('每天巡检')" class="rightspace">每天巡检</Button>
-    <Button type="primary" @click="newTask('设备上架')" class="rightspace">设备上架</Button> 
-    <Button type="primary" @click="newTask('布线')" class="rightspace">布线</Button>
-    <Button type="primary" @click="newTask('日常运维')" class="rightspace">日常运维</Button>
-    <Button type="primary" @click="newTask('配件变更')" class="rightspace">配件变更</Button>
-    <Button type="primary" @click="newTask('设备迁移')" class="rightspace">设备迁移</Button>
+    <!-- <Button type="primary" @click="newTask('tasks_inspecting')" v-for="(item,index) in NameMap"
+    :key="item+index"  class="rightspace">{{NameMap[0]}}</Button> -->
+    <Button type="primary" @click="newTask('tasks_inspecting')" class="rightspace">每天巡检</Button>
+    <Button type="primary" @click="newTask('tasks_maintain')" class="rightspace">日常运维</Button>
+    <Button type="primary" @click="newTask('tasks_moving')" class="rightspace">设备迁移</Button>
+    <Button type="primary" @click="newTask('tasks_server')" class="rightspace">设备上架</Button> 
+    <Button type="primary" @click="newTask('tasks_moveout')" class="rightspace">下架迁出</Button>
+    <Button type="primary" @click="newTask('tasks_assetnum')" class="rightspace">固资编号</Button>
+    <Button type="primary" @click="newTask('tasks_wiring')" class="rightspace">布线</Button>
+    <Button type="primary" @click="newTask('tasks_accessory')" class="rightspace">配件变更</Button>
+    <Button type="primary" @click="newTask('tasks_modify')" class="rightspace">信息变更</Button>
+    
   </TabPane>
 
   <TabPane closable v-for="(tab,index) in tabs.labels" :name="tab.label" :key=tab.label+index :label="tab.label">
@@ -43,7 +49,7 @@ export default {
   },
   data () {
     return {
-      // tabs:[],//新增显示的标签页标题
+      NameMap:[],
       tabs:{
         clabel:'',
         labels:[],
@@ -61,19 +67,23 @@ export default {
           title: '任务类型',
           key: 'showtype',
           filters: [
-              {
-                  label: '设备上架',
-                  value: '设备上架'
-              },
-              {
-                  label: '布线',
-                  value: '布线'
-              },
-              {
-                  label: '其它',
-                  value: '其它'
-              }
-            ],
+            {
+              label: '设备上架',
+              value: '设备上架'
+            },
+            {
+              label: '固资编号',
+              value: '固资编号'
+            },
+            {
+              label: '布线',
+              value: '布线'
+            },
+            {
+              label: '其它',
+              value: '其它'
+            }
+          ],
           filterMethod (value, row) {
               return row.showtype.indexOf(value) > -1;
           }
@@ -92,7 +102,20 @@ export default {
     data5: [],
     }
   },
+  created(){
+    this.NameMap['tasks_inspecting'] = '每天巡检'
+    this.NameMap['tasks_maintain'] = '日常运维'
+    this.NameMap['tasks_moving'] = '设备迁移'
+    this.NameMap['tasks_server'] = '设备上架'
+    this.NameMap['tasks_moveout'] = '下架迁出'
+    this.NameMap['tasks_assetnum'] = '固资编号'
+    this.NameMap['tasks_wiring'] = '布线'
+    this.NameMap['tasks_accessory'] = '配件变更'
+    this.NameMap['tasks_modify'] = '信息变更'
+
+  },
   mounted(){
+    
     request({
       url:'/tasks',
       params:{action:'showtasks'}
@@ -100,16 +123,6 @@ export default {
       console.log(res)
       this.data5 = res.data.message;
     })
-    // axios({
-    //   method:'get',
-    //   url:'http://localhost/ecserver/index.php/tasks',
-    //   params:{action:'showtasks'},
-    //   // data,
-    //   timeout:1000
-    // }).then(res=>{
-    //   this.data5 = res.data.message;
-    //   console.log(this.data5);
-    // })
   },
   computed:{
     getlistdata(){
@@ -126,15 +139,9 @@ export default {
     newTask(name) {
       let ran = String(Math.ceil((Math.random()*10000)))
 
-      let tp
-      if(name == '每天巡检') {tp = 'tasks_inspecting'}
-      if(name == '设备上架') {tp = 'tasks_server'}
-      if(name == '布线') {tp = 'tasks_wiring'}
-      if(name == '设备迁移') {tp = 'tasks_moving'}
-      if(name == '日常运维') {tp = 'tasks_maintain'}
-      if(name == '配件变更') {tp = 'tasks_accessory'}
-      this.tabs.labels.push({label:name+ran,data:{randomid:ran,type:tp}})
-      this.tabs.clabel = name+ran
+      this.tabs.labels.push({label:this.NameMap[name]+ran,data:{randomid:ran,type:name}})
+      this.tabs.clabel =this.NameMap[name]+ran
+      // console.log(this.NameMap[name])
     },
     Continue(index){
       let x = this.tabs.labels.filter(ret => ret.label == String(this.data5[index].randomid))
@@ -195,16 +202,6 @@ export default {
         }).then(res=>{
           this.data5 = res.data.message;
         })
-        // axios({
-        //   method:'get',
-        //   url:'http://localhost/ecserver/index.php/tasks',
-        //   params:{action:'showtasks'},
-        //   // data,
-        //   timeout:1000
-        // }).then(res=>{
-        //   this.data5 = res.data.message;
-          
-        // })
         this.tabs.clabel = 'home'
       }
     }

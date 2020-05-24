@@ -1,40 +1,37 @@
 
 <template >
     <div>
-        <MenuItem name="sideridc-1" >
-          <router-link to="/servers" tag="div"  >
+        <MenuItem name="sideridc-1" to="/servers" >
             <Icon type="ios-desktop-outline"></Icon>
-            <span>--设备列表</span>
-          </router-link>
+            <span>设备列表</span>
         </MenuItem>
-        <MenuItem name="sideridc-2"  >
-          <router-link to="/tasks" tag="div" >
-            <!-- <Icon type="ios-search"></Icon> -->
+        <MenuItem name="sideridc-2" to="/tasks" >
             <Icon type="ios-briefcase"></Icon>
-            <span>--任务列表</span>
-          </router-link>
+            <span>任务列表</span>
         </MenuItem>
-        <MenuItem name="sideridc-3"  >
-            <router-link to="/accessories" tag="div" >
-            <!-- <Icon type="ios-settings"></Icon> -->
+        <MenuItem name="sideridc-3" to="/accessories" >          
             <Icon type="ios-basket"></Icon>
-            <span>--配件库存</span>
-            </router-link>
+            <span>配件库存</span>
         </MenuItem>
-        <MenuItem name="sideridc-4"  >
-            <router-link to="/report" tag="div" >
+        <MenuItem name="sideridc-4" to="/report" >
             <Icon type="md-analytics"></Icon>
-            <span>--报表统计</span>
-            </router-link>
+            <span>工作记录</span>
         </MenuItem>
         
-        <MenuItem name="1-4" >
-        <router-link to="/page2" tag="div">
+        <MenuItem name="1-4" to="/page2">   
           <Icon type="ios-settings"></Icon>
-          
           <span>测试页</span>
-        </router-link>
         </MenuItem>
+
+        <!-- <Submenu name="3">
+            <template slot="title">
+                <Icon type="md-ionitron" />
+                IDC资源
+            </template>
+            <MenuItem name="1-1" to="/page1">公网IP</MenuItem>
+            <MenuItem name="1-2" to="/page2">机柜使用</MenuItem>
+            <MenuItem name="1-3">IDC用户</MenuItem>
+        </Submenu> -->
         
     </div> 
 </template>

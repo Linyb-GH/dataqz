@@ -6,6 +6,9 @@
     <Moving v-if="showtask('tasks_moving')" :message = this.message></Moving>
     <Maintain v-if="showtask('tasks_maintain')" :message = this.message></Maintain>
     <Accessory v-if="showtask('tasks_accessory')" :message = this.message></Accessory>
+    <MoveOut v-if="showtask('tasks_moveout')" :message = this.message></MoveOut>
+    <AssetNum v-if="showtask('tasks_assetnum')" :message = this.message></AssetNum>
+    <Modify v-if="showtask('tasks_modify')" :message = this.message></Modify>
     <!-- <div >{{message}}</div> -->
   </div>
 
@@ -16,8 +19,11 @@ import NewServer from './newserver'
 import Wiring from './newwiring'
 import Inspecting from './newinspect'
 import Moving from './newmoving'
+import MoveOut from './newmoveout'
 import Maintain from './newmaintain'
 import Accessory from './newaccessory'
+import AssetNum from './newassetnum'
+import Modify from './newmodify'
 export default {
   components:{
     NewServer,
@@ -25,7 +31,10 @@ export default {
     Inspecting,
     Moving,
     Maintain,
-    Accessory
+    Accessory,
+    MoveOut,
+    AssetNum,
+    Modify
   },
   props:[
     "message"

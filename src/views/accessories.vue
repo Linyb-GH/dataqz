@@ -95,12 +95,12 @@ export default {
       ],
       data5: [
         {
-          type:'网线',
-          name: 'John Brown',
-          specifications: 18,
-          num: 'New York No. 1 Lake Park',
-          uint: '2016-10-03',
-          site: 'site'          
+          // type:'网线',
+          // name: 'John Brown',
+          // specifications: 18,
+          // num: 'New York No. 1 Lake Park',
+          // uint: '2016-10-03',
+          // site: 'site'          
         },
 
       ],

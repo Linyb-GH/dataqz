@@ -171,8 +171,13 @@ export default {
   },
   created(){
     // this.formdata.tabpaperuse='NotUse'
+    // let cdate = new Date()
+    // this.formdata.cdate = cdate.getFullYear() + "-" + (cdate.getMonth() + 1) + "-" + cdate.getDate()
     let cdate = new Date()
-    this.formdata.cdate = cdate.getFullYear() + "-" + (cdate.getMonth() + 1) + "-" + cdate.getDate()
+    let yy = cdate.getFullYear()
+    let mm = (cdate.getMonth()<9? '0'+ (cdate.getMonth()+1):cdate.getMonth()+1)
+    let dd = cdate.getDate()<10? '0'+(cdate.getDate()):cdate.getDate()
+    this.formdata.cdate = yy + "-" + mm + "-" + dd
   },
   methods:{
     nextstep(name){
@@ -219,36 +224,29 @@ export default {
       })
     },
     saveAction(){
-      this.$Message.success('This is a success tip:');
+      
       this.formdata.randomid = this.message.randomid
       this.formdata.tasktype = this.message.type
- 
       this.formdata.currentstp = this.steps+1+"/2"
       if(this.formdata.randomid == 'new' ){
         this.formdata.randomid = this.message.id_random//(Math.ceil((Math.random()*10000)))
       }
       let data = Qs.stringify({"taskdata":this.formdata});
-      // console.log(this.formdata)
-      // axios({
-      //   method:'post',
-      //   url:'http://localhost/ecserver/index.php/tasks',
-      //   params:{action:'creattask'},
-      //   data,
-      //   timeout:1000
-      // }).then(res=>{
-      //   console.log(res);
-      // })
       request({
         method:'post',
         url:'/tasks',
         params:{action:'creattask',type:'tasks_wiring'},
         data,
       }).then(res =>{
+        this.$Message.success('布线信息已保存');
         console.log(res)
+      }).catch(err =>{
+        this.$Message.error('发生错误');
       })
     },
     ok(){
-      this.$Message.info('wiring task is ok')
+      this.formdata.randomid = this.message.randomid
+      this.formdata.tasktype = this.message.type
       let data = Qs.stringify({"taskdata":this.formdata});
       // axios({
       //   method:'post',
@@ -265,8 +263,11 @@ export default {
         params:{action:'taskfinish',type:'tasks_wiring'},
         data
       }).then(res =>{
+        this.$Message.success('布线数据已保存')
         console.log(res)
         this.isfinish = true
+      }).catch(err =>{
+        this.$Message.error('发生错误'.err)
       })
     },
     cancel(){
@@ -278,17 +279,6 @@ export default {
     }
   },
   mounted(){
-    // axios({
-    //   method:'get',
-    //   url:'http://localhost/ecserver/index.php/tasks',
-    //   params:{
-    //     action:'pageinit',
-    //     type:'tasks_wiring'
-    //   },
-    //   timeout:1000
-    // }).then(res=>{
-    //   this.selectdata = res.data.message
-    // })
     request({
       url:'/tasks',
       params:{
@@ -296,29 +286,10 @@ export default {
         type:'tasks_wiring'
       }
     }).then(res =>{
-      // console.log(res)
       this.selectdata = res.data.message
     })
 
     if(this.message.cdate != null){
-      // axios({
-      // method:'get',
-      // url:'http://localhost/ecserver/index.php/tasks',
-      // params:{
-      //   action:'continue',
-      //   cdate:this.message.cdate,
-      //   randomid:this.message.randomid,
-      //   type:'tasks_wiring'
-      // },
-      //   timeout:1000
-      // }).then(res=>{
-      //   let data = {}
-      //   data = res.data.message
-      //   this.steps = parseInt(data.currentstp.substr(0,1)) -1
-      //   if(data.ldevice){data.ldevice = data.ldevice.split(',')}
-      //   if(data.rdevice){data.rdevice = data.rdevice.split(',')}
-      //   this.formdata = data
-      // })
       request({
         url:'/tasks',
         params:{
@@ -328,11 +299,10 @@ export default {
           type:'tasks_wiring'
         }
       }).then(res =>{
+        console.log(res)
         let data = {}
         data = res.data.message
-        this.steps = parseInt(data.currentstp.substr(0,1)) -1
-        if(data.ldevice){data.ldevice = data.ldevice.split(',')}
-        if(data.rdevice){data.rdevice = data.rdevice.split(',')}
+        if(data.currentstp == 'finish'){this.isfinish = true}
         this.formdata = data
       })
     }else{
@@ -361,7 +331,7 @@ export default {
 
 <style>
   .wiring-split{
-    height: 400px;
+    height: 450px;
     border: 1px solid #dcdee2;
     position: relative;
   }

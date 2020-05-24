@@ -5,14 +5,16 @@
       <Panel name='1'>
         设备信息
         <div slot="content"> 
-          设备编号：{{message.info[0].number}}----------设备名称：{{message.info[0].name}}<span class="right"></span><br>
-          设备类型：{{message.info[0].types}}----------设备大小：{{message.info[0].size}} U<br>
-          所属系统：{{message.info[0].system}}----------所属分区：{{message.info[0].systemarea}}<br>
-          机房位置：{{message.info[0].location1}}----------机柜位置：{{message.info[0].location2}}<br>
-          序列号：{{message.info[0].serial}}----------上架时间：{{message.info[0].date}}<br>
-          BMC登录：<a :href="BMClogin" target="_black">{{message.info[0].bmcip}}</a>---------
-          BMC账号：{{message.info[0].bmclogin}}<br>
-          固资编号：{{message.info[0].gnumber}}------------功耗：{{message.info[0].power}}
+          设备编号：[{{message.info[0].number}}]----------上架时间：[{{message.info[0].date}}]<br>
+          设备名称：[{{message.info[0].name}}]----------设备型号：[{{message.info[0].devicemodel}}]<br>
+          设备类型：[{{message.info[0].types}}]----------设备大小：[{{message.info[0].size}} U]<br>
+          所属系统：[{{message.info[0].system}}]----------所属分区：[{{message.info[0].systemarea}}]<br>
+          机房位置：[{{message.info[0].location1}}]----------机柜位置：[{{message.info[0].location2}}]<br>
+          厂商：[{{message.info[0].manufacturer}}]----------序列号：[{{message.info[0].serial}}]<br>
+          BMC登录：<a :href="BMClogin" target="_black">[{{message.info[0].bmcip}}]</a>---------
+          BMC账号：[{{message.info[0].bmclogin}}]<br>
+          固资编号：[{{message.info[0].gnumber}}]------------功耗：[{{message.info[0].power}}]<br>
+          备注：{{message.info[0].remark}}
         </div>
       </Panel>
       <Panel name="2">

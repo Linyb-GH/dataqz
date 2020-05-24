@@ -12,6 +12,8 @@
               <!-- <Radio label="IDC用户维护"></Radio> -->
               <Radio label="网络故障维护"></Radio>
               <Radio label="配置更改"></Radio>
+              <Radio label="关机与重启"></Radio>
+              <Radio label="专线接入"></Radio>
               <Radio label="其他维护"></Radio>
             </RadioGroup>
             
@@ -76,6 +78,8 @@
 
 import {request} from '../../network/request'
 import Qs from 'qs';
+import {location, Publicfunc, IdcTools} from '../../assets/JStools/idc'
+var action = new IdcTools()
 export default {
   props:[
     "message"
@@ -91,37 +95,17 @@ export default {
         fdate:'',
         maintainer:'',
       },
+      isfinish:false,
       isdisable:false,
       split1: 0.75,
       steps:0,
-      isfinish:false,
-      jiliandata:
-      [
-        {
-          value: '3-2_A',
-          label: '3-2_A列',
-          children: [],
-          loading: false
-        },
-        {
-          value: '3-2_B',
-          label: '3-2_B列',
-          children: [],
-          loading:false
-        },
-        {
-          value: '1-2_A',
-          label: '1-2_A列',
-          children: [],
-          loading:false
-        },
-      ]
+      
+      jiliandata:[]
     }
   },
   created(){
-    // this.formdata.tabpaperuse='NotUse'
-    let cdate = new Date()
-    this.formdata.cdate = cdate.getFullYear() + "-" + (cdate.getMonth() + 1) + "-" + cdate.getDate()
+    this.jiliandata = action.jiliandata
+    this.formdata.cdate = action.now
   },
   methods:{
     nextstep(name){
@@ -137,24 +121,11 @@ export default {
       }
     },
     loadData (item, callback) {
-      item.loading = true;
-      request({
-        url:'/servers',
-        params:{
-          action:'getjilianinfo',
-          column:item.value
-        }
-      }).then(res=>{
-        let jilian = res.data
-        item.children = jilian.message.children
-        item.loading = false;
-        callback();
-      })
+      action.deviceslect(item,callback)
     },
     saveAction(){
-
       this.formdata.randomid = this.message.randomid
- 
+      this.formdata.tasktype = this.message.type
       this.formdata.currentstp = this.steps+1+"/2"
       if(this.formdata.randomid == 'new' ){
         this.formdata.randomid = this.message.id_random//(Math.ceil((Math.random()*10000)))
@@ -173,7 +144,8 @@ export default {
       })
     },
     ok(){
-      
+      this.formdata.randomid = this.message.randomid
+      this.formdata.tasktype = this.message.type
       let data = Qs.stringify({"taskdata":this.formdata});
       request({
         method:'post',
@@ -181,6 +153,7 @@ export default {
         params:{action:'taskfinish',type:'tasks_maintain'},
         data
       }).then(res =>{
+        console.log(res)
         this.$Message.success('数据已保存并更新')
         this.isfinish = true
       }).catch(err =>{
@@ -192,7 +165,6 @@ export default {
     },
   },
   mounted(){
-
     if(this.message.cdate != null){ //区分是继续还是新建的页面
       request({
         url:'/tasks',
@@ -205,9 +177,8 @@ export default {
       }).then(res =>{
         let data = {}
         data = res.data.message
-        console.log(data.device)
-        this.steps = parseInt(data.currentstp.substr(0,1)) -1
-        if(data.device){data.device = data.device.split(',')}
+        if(data.currentstp == 'finish'){this.isfinish = true}
+        console.log(data)
         this.formdata = data
       })
     }else{

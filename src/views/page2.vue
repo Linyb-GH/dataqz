@@ -4,6 +4,13 @@
 
     <Cascader :data="data4" :load-data="loadData"></Cascader>
     <button @click="buttontest">axios测试</button>
+    <button @click="panglu">旁路扫描</button>
+    <br>
+    <Upload
+        multiple 
+        action="//jsonplaceholder.typicode.com/posts/">
+        <Button icon="ios-cloud-upload-outline" class="topmargin">上传文件</Button>
+    </Upload>
     <br>
     {{axiosdata}}
     <br><br><br><br><br><br><br><br><br>
@@ -22,9 +29,10 @@
 </template>
 
 <script>
-// import axios from 'axios';
-// import Qs from 'qs'
+import axios from 'axios';
+import Qs from 'qs'
 import {request} from '../network/request'
+import {IdcTools} from '../assets/JStools/idc'
 export default {
   data () {
     return {
@@ -71,27 +79,6 @@ export default {
     },
     loadData (item, callback) {
       item.loading = true;
-      axios({
-      method:'get',
-      url:'http://localhost/ecserver/index.php/servers',
-      params:{
-        action:'getjilianinfo',
-        column:item.value
-      },
-      // data,
-        timeout:5000
-      }).then(res=>{
-        let jilian = res.data;
-        item.children = jilian.message.children
-        console.log(jilian)
-        if(item.value == '3-2_A'){
-          // item.children = jilian.message.children
-        }else if(item.value == '3-2_B'){
-          console.log('B lie')
-        }
-        item.loading = false;
-        callback();
-      })
       
     },
     labeltest(){
@@ -113,22 +100,47 @@ export default {
       }).then(res=>{
         console.log(res)
       })
-      // var data = Qs.stringify({"recdata":['abc','def']});
       
+      
+    },
+    panglu(){
+      let iptable = 
+      ['110.88.128.246','110.88.128.16','110.88.153.75','110.88.128.64','110.88.128.95',
+      '110.88.129.60']
+      function test(){
+        for(let i=0;i<iptable.length;i++){
+          axios({
+          method:'get',
+          url:'https://bird.ioliu.cn/v1?url=http://api.webscan.cc?action=query&ip='+iptable[i],
+          timeout:1000
+          }).then(res=>{
+            if(res.data == null){console.log(iptable[i]+'  IP未解析任何域名') }else{
+              console.log(iptable[i]+'------------------')
+              for(let j=0;j<res.data.length;j++){
+                console.log(res.data[j])
+              }
+            }
+          }).catch(err =>{
+            console.log(err)
+          })
+        }
+        
+      }
+      test()
       // axios({
       // method:'get',
-      // url:'http://localhost/ecserver/index.php/servers',
-      // params:{
-      //   action:'showlist',
-      //   page: 1
-      // },
-      // // data,
-      //   timeout:1000
-      // }).then(res=>{
-      //   this.testarr = res.data;
-      //   console.log(this.testarr)
-      // })
+      // // url:'https://bird.ioliu.cn/v1?url=http://api.webscan.cc',
+      // url:'https://bird.ioliu.cn/v1?url=http://api.webscan.cc?action=query&ip=110.88.128.246',
+      // // params:{
       
+      // // },
+      // // formdata,
+      // timeout:1000
+      // }).then(res=>{
+      //   console.log(res)
+      // }).catch(err =>{
+      //   console.log(err)
+      // })
     },
     closelabel(index){
       this.tabs.label.splice(index,1)
@@ -136,3 +148,6 @@ export default {
   }
 }
 </script>
+<style scoped>
+  @import '../assets/css/common.css';
+</style>

@@ -70,7 +70,10 @@ export default {
   created(){
     // this.formdata.tabpaperuse='NotUse'
     let cdate = new Date()
-    this.formdata.cdate = cdate.getFullYear() + "-" + (cdate.getMonth() + 1) + "-" + cdate.getDate()
+    let yy = cdate.getFullYear()
+    let mm = (cdate.getMonth()<9? '0'+ (cdate.getMonth()+1):cdate.getMonth()+1)
+    let dd = cdate.getDate()<10? '0'+(cdate.getDate()):cdate.getDate()
+    this.formdata.cdate = yy + "-" + mm + "-" + dd
   },
   methods:{
     typeselect(index){
@@ -102,7 +105,7 @@ export default {
         params:{action:'creattask',type:'tasks_accessory'},
         data,
       }).then(res =>{
-        this.$Message.success('保存成功');
+        this.$Message.success('保存成功!');
         console.log(res)
       }).catch(res =>{
         this.$Message.error('保存失败');
@@ -110,6 +113,9 @@ export default {
     },
     ok(){
       this.formdata.senddata = this.senddata
+      this.formdata.randomid = this.message.randomid
+      this.formdata.tasktype = this.message.type
+      this.formdata.currentstp = 'finish'
       let data = Qs.stringify({"taskdata":this.formdata});
       this.senddata.filter(item =>{
         if(item.name == ''){
@@ -151,10 +157,12 @@ export default {
       }).then(res =>{
         let data = {}
         data = res.data.message
+        console.log(data)
         this.senddata = data.senddata
         this.formdata.randomid = data.randomid
         this.formdata.cdate = data.cdate
-        console.log(data)
+        if(data.currentstp == 'finish'){this.isfinish = true}
+        
         // this.steps = parseInt(data.currentstp.substr(0,1)) -1
         // if(data.device){data.device = data.device.split(',')}
         // this.formdata = data

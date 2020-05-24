@@ -116,9 +116,13 @@ export default {
   },
   created(){
     // this.formdata.tabpaperuse='NotUse'
-    let cdate = new Date()
+
     this.serverdata.randomid = this.message.randomid
-    this.serverdata.cdate = cdate.getFullYear() + "-" + (cdate.getMonth() + 1) + "-" + cdate.getDate()
+    let cdate = new Date()
+    let yy = cdate.getFullYear()
+    let mm = (cdate.getMonth()<9? '0'+ (cdate.getMonth()+1):cdate.getMonth()+1)
+    let dd = cdate.getDate()<10? '0'+(cdate.getDate()):cdate.getDate()
+    this.serverdata.cdate = yy + "-" + mm + "-" + dd
   },
   methods:{
     nextstep(name){
@@ -135,6 +139,8 @@ export default {
     },
     ok(){
       // console.log(this.serverdata)
+      this.serverdata.randomid = this.message.randomid
+      this.serverdata.tasktype = this.message.type
       let data = Qs.stringify({"taskdata":this.serverdata});
       request({
         method:'post',
@@ -154,22 +160,43 @@ export default {
     },
   },
   mounted(){
-    // console.log(this.message)
-    request({
+    if(this.message.cdate){
+      this.formdata.isfinish = true
+      request({
+        url:'/tasks',
+        params:{
+          action:'continue',
+          cdate:this.message.cdate,
+          randomid:this.message.randomid,
+          type:'tasks_inspecting'
+        }
+      }).then(res =>{
+        this.serverdata.servers = res.data.message.servers
+        this.serverdata.inspectp1 = res.data.message.inspectp1
+        this.serverdata.inspectp2 = res.data.message.inspectp2
+        this.serverdata.inspector = res.data.message.inspector
+        this.serverdata.remark = res.data.message.remark
+        console.log(res)
+      }).catch(err =>{
+        
+      })
+      //console.log('info')
+    }else{
+      //console.log('new')
+      request({
       url:'/tasks',
       params:{
         action:'pageinit',
         type:'tasks_inspecting'
       }
-    }).then(res =>{
-      this.serverdata.inspectp1 = res.data.message[0]
-      this.serverdata.inspectp2 = res.data.message[1]
-      // console.log(res)
-      // this.selectdata = res.data.message
-    }).catch(err =>{
-      this.$Message.error('发生错误')
-      console.log(err)
-    })
+      }).then(res =>{
+        this.serverdata.inspectp1 = res.data.message[0]
+        this.serverdata.inspectp2 = res.data.message[1]
+      }).catch(err =>{
+        this.$Message.error('发生错误')
+        console.log(err)
+      })
+    }
   },
 }
 

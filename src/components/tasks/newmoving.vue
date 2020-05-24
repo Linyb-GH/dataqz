@@ -16,12 +16,18 @@
             
             <br>
             迁移后的位置:
-            <Select v-model="senddata.room" style="width:100px" >
+            <Select v-model="senddata.room" style="width:100px" class="rightspace">
               <Option v-for="item in formdata.room" :value="item" :key="item">{{ item }}</Option>
-            </Select> <br>
+            </Select> 
+            保留接口连线：
+              <RadioGroup v-model="senddata.link">
+                <Radio label="保留"></Radio>
+                <Radio label="删除"></Radio>
+              </RadioGroup>
+            <br>
             <div class="flexsyt topmargin">
               上架位置：
-              <Cascader :data="site" v-model="senddata.jigui" class="siteclass rightspace"></Cascader>
+              <Cascader :data="site" v-model="senddata.jigui" class="rightspace"></Cascader>
               所在机柜位置（1-42）：
               <Input style="width:50px" v-model="senddata.site" />
             </div>
@@ -72,6 +78,8 @@
 <script>
 import {request} from '../../network/request'
 import Qs from 'qs';
+import {location, Publicfunc, IdcTools} from '../../assets/JStools/idc'
+var action = new IdcTools()
 export default {
   props:[
     "message"
@@ -83,70 +91,35 @@ export default {
         reason:'',
         room:'',
         site:'',
+        senddata:'保留',
         jigui:[],
         newname:'',
         system:'政务外网',
         systemarea:'互联网区',
         bmcip:'',
-        bmclogin:''
+        bmclogin:'',
+        maintainer:''
 
       },
       split1: 0.75,
       steps:0,
+      testdt:'thi is test data',
       isfinish:false,
       formdata:{
         room:['3-2','1-2']
       },
-      site:[
-        {
-          value: 'A',
-          label: 'A列',
-          children: []
-        },
-        {
-          value: 'B',
-          label: 'B列',
-          children: []
-        },
-      ],
-      jiliandata:[
-        {
-          value: '3-2_A',
-          label: '3-2_A列',
-          children: [],
-          loading: false
-        },
-        {
-          value: '3-2_B',
-          label: '3-2_B列',
-          children: [],
-          loading:false
-        },
-        {
-          value: '1-2_A',
-          label: '1-2_A列',
-          children: [],
-          loading:false
-        },
-      ]
+      site:[],
+      jiliandata:[]
     }
   },
   created(){
-    for(let i=1;i<23;i++){
-      if(i<10){
-        this.site[0].children.push({'value':'0'+i,label:'0'+i});
-        this.site[1].children.push({'value':'0'+i,label:'0'+i});
-      }else{
-        this.site[0].children.push({'value':i,label:i});
-        this.site[1].children.push({'value':i,label:i});
-      }
-    }
     this.senddata.site = 1
-    let cdate = new Date()
-    let yy = cdate.getFullYear()
-    let mm = (cdate.getMonth()<9? '0'+ (cdate.getMonth()+1):cdate.getMonth()+1)
-    let dd = cdate.getDate()<10? '0'+(cdate.getDate()):cdate.getDate()
-    this.senddata.cdate = yy + "-" + mm + "-" + dd
+    this.senddata.maintainer = '技术支撑部'
+
+    this.senddata.cdate = action.now
+    this.site = action.location
+    this.jiliandata = action.jiliandata
+    
   },
   methods:{
     nextstep(name){
@@ -162,26 +135,13 @@ export default {
       }
     },
     loadData (item, callback) {
-      item.loading = true;
-      request({
-        url:'/servers',
-        params:{
-          action:'getjilianinfo',
-          column:item.value
-        }
-      }).then(res=>{
-        let jilian = res.data
-        item.children = jilian.message.children
-        item.loading = false;
-        callback();
-      })
+      action.deviceslect(item,callback)
     },
     saveAction(){
       
       this.senddata.randomid = this.message.randomid
       this.senddata.tasktype = this.message.type
       this.senddata.currentstp = this.steps+1+"/2"
-      // this.senddata.cdate = this.message.cdate
       if(this.senddata.randomid == 'new' ){
         this.senddata.randomid = this.message.id_random
       }
@@ -202,6 +162,7 @@ export default {
     ok(){
       this.senddata.randomid = this.message.randomid
       this.senddata.tasktype = this.message.type
+      this.senddata.currentstp = 'finish'
       let data = Qs.stringify({"taskdata":this.senddata});
       request({
         method:'post',
@@ -211,7 +172,7 @@ export default {
       }).then(res =>{
         this.$Message.success('设备迁移成功')
         console.log(res)
-        //this.isfinish = true
+        this.isfinish = true
       }).catch(err =>{
         this.$Message.error('发生错误：'.err)
       })
@@ -221,17 +182,6 @@ export default {
     },
   },
   mounted(){
-    // request({
-    //   url:'/tasks',
-    //   params:{
-    //     action:'pageinit',
-    //     type:'tasks_moving'
-    //   }
-    // }).then(res =>{
-    //   // console.log(res)
-    //   this.selectdata = res.data.message
-    // })
-
     if(this.message.cdate != null){
       request({
         url:'/tasks',
@@ -242,15 +192,14 @@ export default {
           type:'tasks_moving'
         }
       }).then(res =>{
-        console.log(res);
+        // console.log(res);
         let data = {}
         data = res.data.message
         if(data.currentstp != 'finish'){
           this.steps = parseInt(data.currentstp.substr(0,1)) -1
+        }else{
+          this.isfinish = true
         }
-        
-        // if(data.ldevice){data.ldevice = data.ldevice.split(',')}
-        // if(data.rdevice){data.rdevice = data.rdevice.split(',')}
         this.senddata = data
       })
     }else{
@@ -280,10 +229,8 @@ export default {
   .flexsyt{
     display: flex;
   }
-  .buttons{
-    position: absolute;
-    padding: 10px;
-    bottom: 5px;
-    color:black
+  .rightspace{
+    margin-right: 20px;
   }
+
 </style>
