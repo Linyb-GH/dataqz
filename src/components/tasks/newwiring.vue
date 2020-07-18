@@ -114,6 +114,8 @@
 // import axios from 'axios';
 import {request} from '../../network/request'
 import Qs from 'qs';
+import {location, Publicfunc, IdcTools} from '../../assets/JStools/idc'
+var action = new IdcTools()
 export default {
   props:[
     "message"
@@ -130,7 +132,7 @@ export default {
         wiringtype:'copper',
         modulefetch:'other',
         module:'',
-        wiringfetch: "store",
+        wiringfetch: "other",
         wirelength: "",
         tabpaper: "",
         currentstp: "1/2",
@@ -170,14 +172,13 @@ export default {
     }
   },
   created(){
-    // this.formdata.tabpaperuse='NotUse'
+
     // let cdate = new Date()
-    // this.formdata.cdate = cdate.getFullYear() + "-" + (cdate.getMonth() + 1) + "-" + cdate.getDate()
-    let cdate = new Date()
-    let yy = cdate.getFullYear()
-    let mm = (cdate.getMonth()<9? '0'+ (cdate.getMonth()+1):cdate.getMonth()+1)
-    let dd = cdate.getDate()<10? '0'+(cdate.getDate()):cdate.getDate()
-    this.formdata.cdate = yy + "-" + mm + "-" + dd
+    // let yy = cdate.getFullYear()
+    // let mm = (cdate.getMonth()<9? '0'+ (cdate.getMonth()+1):cdate.getMonth()+1)
+    // let dd = cdate.getDate()<10? '0'+(cdate.getDate()):cdate.getDate()
+    // this.formdata.cdate = yy + "-" + mm + "-" + dd
+    this.formdata.cdate = action.now
   },
   methods:{
     nextstep(name){
@@ -214,7 +215,8 @@ export default {
         url:'/servers',
         params:{
           action:'getjilianinfo',
-          column:item.value
+          column:item.value,
+          random:String(Math.ceil((Math.random()*10000)))
         }
       }).then(res=>{
         let jilian = res.data

@@ -1,8 +1,8 @@
 {
-  "name": "tabbar",
+  "name": "dataqz",
   "version": "1.0.0",
   "description": "A Vue.js project",
-  "author": "coderYJ <997745354@qq.com>",
+  "author": "linyubin <961549629@qq.com>",
   "private": true,
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",

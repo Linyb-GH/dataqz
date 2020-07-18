@@ -6,6 +6,10 @@ git add .
 git commit -m "first commit"
 git push
 
+## git 代码克隆
+
+git clone https://github.com/Linyb-GH/dataqz.git
+
 ## Build Setup
 
 ``` bash

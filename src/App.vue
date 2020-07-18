@@ -125,7 +125,7 @@
         methods: {
             collapsedSider () {
                 this.$refs.side1.toggleCollapse();
-                console.log(this.$store.state.showpage)
+                //console.log(this.$store.state.showpage)
             },
             showheader(item){ 
                 this.showsider = item

@@ -7,7 +7,7 @@
 
 export default {
   components:{
-   
+    page1
   },
   data () {
     return {

@@ -1,16 +1,13 @@
 <template>
   <div>
-    
     <div class="common-split">
-      <Split v-model="split1" min="40px">
+      <Split v-model="split1" min="40px" v-show="this.steps < 2">
         <div slot="left" class="common-split-pane">
           <div v-show="this.steps == 0"><br>
             <div >
               <Cascader  @on-change="selected" 
                :load-data="loadData" :data="jiliandata" style="width:300px" placeholder="修改之前信息"></Cascader>
             </div>
-            
-            <!-- 带外管理IP：{{initdata['bmcip']}} -->
 
             <Input  style="width:300px;margin-top:20px" disabled  :placeholder="'带外管理IP：'+initdata['bmcip']" /><br>
             <Input  style="width:300px;margin-top:20px" disabled  :placeholder="'账号：'+initdata['bmclogin']" /> <br>
@@ -39,6 +36,19 @@
           </div>
         </div>
       </Split>
+      <div v-show="this.steps == 2">
+        <!-- <div v-for="(index,item) in wiring" :key="item+index">
+          {{index}}
+        </div> -->
+        <Table height="400" :columns="wiringcolumns" :data="wiring">
+          <template slot-scope="{ row, index }" slot="action">
+            <Button type="error" :loading="loading" size="small" @click="remove(index)">
+              <span v-if="!loading">Delete</span>
+              <span v-else>Loading...</span>
+            </Button>
+          </template>
+        </Table>
+      </div>
     </div>
     <div class="buttomcss">
       <Button type="primary" @click="nextstep('back')">上一步</Button>
@@ -48,7 +58,7 @@
         title="点击完成后数据将更新到相关列表里，确定完成并提交数据?"
         @on-ok="ok"
         @on-cancel="cancel">
-        <Button type="success" v-show="steps == 1" :disabled="isfinish">完成</Button>
+        <Button type="success" v-show="steps == 2" :disabled="isfinish">完成</Button>
       </Poptip>
       <Button type="primary" @click="nextstep('next')">下一步</Button>
     </div>
@@ -74,8 +84,37 @@ export default {
       
       split1: 0.5,
       steps:0,
+      loading: false,
       
-      jiliandata:[]
+      jiliandata:[],
+      wiringcolumns:[
+        {
+          title: '端口',
+          key: 'port'
+        },
+        {
+          title: 'IP',
+          key: 'ip'
+        },
+        {
+          title: '对连设备',
+          key: 'name'
+        },
+        {
+          title: '对连端口',
+          key: 'port2'
+        },
+        {
+          title: '类型',
+          key: 'type'
+        },
+        {
+          title: '操作',
+          slot: 'action',
+          align: 'center'
+        }
+      ],
+      wiring:[],
     }
   },
   created(){
@@ -90,7 +129,7 @@ export default {
         }      
       }
       if(name == 'next'){
-        if(this.steps<1){
+        if(this.steps<2){
           this.steps++
         }
       }
@@ -110,9 +149,9 @@ export default {
         this.senddata.devicemodel = res.data.message.info[0]['devicemodel']
         this.senddata.remark = res.data.message.info[0]['remark']
         this.senddata.systemarea = res.data.message.info[0]['systemarea']
-        
         this.senddata['device'] = selectedData[2].label
-        //console.log(res.data.message.info[0])
+        this.wiring = res.data.message.wiring
+        console.log(res.data.message.wiring)
       }).catch(err =>{
         this.$Message.error('后台读取数据失败'.err);
       })
@@ -136,7 +175,7 @@ export default {
         data,
       }).then(res =>{
         this.$Message.success('保存成功');
-        console.log(res)
+        // console.log(res)
       }).catch(res =>{
         this.$Message.error('保存失败');
       })
@@ -162,6 +201,25 @@ export default {
     cancel(){
       this.$Message.info('You click cancel')
     },
+    remove(index){
+      // console.log(this.wiring[index]['cardid'])
+      // console.log(index)
+      this.loading = true;
+      request({
+        url:'servers',
+        params:{
+          action:'deleteport',
+          cardid:this.wiring[index]['cardid']
+        }
+      }).then(res =>{
+        this.$Message.success('已删除');
+        this.loading = false
+        this.wiring.splice(index,1)
+      }).catch(err =>{
+        this.$Message.error('发生错误，联系林毓斌处理'+err);
+      })
+      
+    },
   },
   mounted(){
     if(this.message.cdate != null){ //区分是继续还是新建的页面
@@ -177,7 +235,7 @@ export default {
         let data = {}
         data = res.data.message
         if(data.currentstp == 'finish'){this.isfinish = true}
-        console.log(data)
+        // console.log(data)
         this.senddata = data
         this.initdata = data.bck
       })

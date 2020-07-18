@@ -9,11 +9,11 @@ const store = new Vuex.Store({
         tatedata:'I am test data for store',
         taskdata:{},
         showcurrent:[],
-        showpage:[
-            {label:'2-1测试页',tabname:'tab0',isshow:true},
-            {label:'2-2测试页',tabname:'tab1',isshow:false},
-            {label:'2-3测试页',tabname:'tab2',isshow:true}
-        ]
+        showtabs:['store1','store2'],
+        showtabs:{
+            ctab:'page2',
+            tabs:['okok','abce'],
+        }
     },
     mutations:{
         storetest(state,input){
@@ -24,13 +24,17 @@ const store = new Vuex.Store({
             if(exist == -1) state.showcurrent.splice(state.showcurrent.length,0,show)
             console.log('store -show '+state.showcurrent)
         },
-        closepg(state,closelabel){
-            state.showcurrent.splice(closelabel,1)
-            console.log('store - close'+state.showcurrent)
-
+        newtab(state,name){
+            
+            // state.showtabs.ctab.splice(0,1,name)
+            state.showtabs.tabs.push('push'+name)
+            state.showtabs.ctab = 'push'+name
         },
-        taskgetlist(state,data){
-            state.taskdata.tasklist = data
+        deletetab(state,label){
+            // state.showtabs.tabs.remove(label)
+            state.showtabs.tabs = state.showtabs.tabs.filter(ret =>ret != label)
+            // console.log(x)
+            // console.log(state.showtabs.tabs)
         }
     },
     actions:{

@@ -7,15 +7,20 @@
       </template>
     </Table>
   </TabPane>
-  <TabPane label="Excel导出" key="ExcelDC" >
+  <!-- <TabPane label="Excel导出" key="ExcelDC" >
     <div class="center">
-      <!-- 服务器数量分类统计
-      配件不足提醒
-      近阶段（七天）任务完成量，分类统计
-      生成月报（上个月） -->
       EXCEL导出；
     </div>
     <Button type="primary" @click="exportData"><Icon type="ios-download-outline"></Icon>导出测试数据</Button>
+  </TabPane> -->
+    <TabPane label="维修列表" key="mlist" >
+    <Table :columns="maintaincolumns" :data="maintaindata" size="small" >
+    
+    </Table>
+    <br>
+    <Page style="text-align:center;" :total="totalpage" @on-change="pagefunc" />
+    <br>
+
   </TabPane>
   <TabPane closable v-for="(tab,index) in tabs.labels" :name="tab.label" :key=tab.label+index :label="tab.label">
     <NewTask :message = tab.data></NewTask>
@@ -76,6 +81,36 @@ export default {
         }
       ],
       Tasklish:[],
+      maintaincolumns: [
+        {
+          title: '日期',
+          key: 'fdate',
+        },
+        {
+          title: '设备',
+          key: 'name',
+        },
+        {
+          title: '类型',
+          key: 'mtype',
+        },
+        {
+          title: '过程',
+          key: 'myprocedure',
+          width:300
+        },
+        {
+          title: '联系',
+          key: 'contact',
+        },
+        {
+          title: '维修人员',
+          key: 'maintainer',
+        },
+      ],
+      maintaindata:[],
+      page:1,
+      totalpage:10
     }
   },
   components:{
@@ -86,8 +121,19 @@ export default {
       url:'/tasks',
       params:{action:'finishtasks'}
     }).then(res =>{
-      console.log(res)
+      // console.log(res)
       this.Tasklish = res.data.message;
+    })
+    request({
+      url:'/servers',
+      params:{
+        page:this.page,
+        action:'getmaintainslist'
+      }
+    }).then(res =>{
+      this.maintaindata = res.data.message.maintains
+      this.totalpage = res.data.message.page
+      console.log(res)
     })
   },
   methods: {
@@ -125,6 +171,17 @@ export default {
         //callback
       });
       //window.open('http://localhost/api/')
+    },
+    pagefunc(page){
+      request({
+        url:'servers',
+        params:{
+          page:page,
+          action:'getmaintainslist'
+        }
+      }).then(res =>{
+        this.maintaindata = res.data.message.maintains
+      })
     }
   },
   

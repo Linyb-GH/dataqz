@@ -134,7 +134,7 @@ export default {
       request({
         method:'post',
         url:'/tasks',
-        params:{action:'creattask',type:'tasks_maintain'},
+        params:{action:'creattask',type:'tasks_maintain',random:String(Math.ceil((Math.random()*10000)))},
         data,
       }).then(res =>{
         this.$Message.success('保存成功');

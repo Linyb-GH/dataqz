@@ -1,5 +1,5 @@
 <template>
-<Tabs ref="contents" type="card" :value="tabs.clabel" @on-tab-remove="closelabel" >
+<Tabs ref="contents" type="card" :value="tabs.ctab" @on-tab-remove="closelabel" >
   <TabPane label="page2" name = 'page2'>
 
     <Cascader :data="data4" :load-data="loadData"></Cascader>
@@ -14,16 +14,18 @@
     <br>
     {{axiosdata}}
     <br><br><br><br><br><br><br><br><br>
+    <!-- <page1></page1> -->
   </TabPane>
   
   <TabPane label="page2-1" name = 'page2-1'>
     <p>this is page 2-1</p>
-    <p>{{this.$store.state.tatedata}}</p>
+    <p>{{this.$store.state.tatedata}}--{{this.$store.state.showtabs.ctab}}</p>
     <button @click="storetest">store测试</button>
     <button @click="labeltest">label-test</button>
   </TabPane>
-  <TabPane closable  v-for="(tab,index) in tabs.label" :name="tab"  :key=tab+index :label="tab">
-    <p>{{tab}}</p>
+  <TabPane closable  v-for="(tab,index) in tabs.tabs" :name="tab"  :key=tab+index :label="tab">
+    <!-- <p>{{tab}}</p> -->
+    <PubComponet></PubComponet>
   </TabPane>
 </Tabs>
 </template>
@@ -33,12 +35,16 @@ import axios from 'axios';
 import Qs from 'qs'
 import {request} from '../network/request'
 import {IdcTools} from '../assets/JStools/idc'
+import PubComponet from '../components/common/PubComponent'
+// import page1 from './page1'
 export default {
+  components:{
+    PubComponet
+  },
   data () {
     return {
       tabs:{
-        // clabel:'page2',
-        // label:['abc','hahah']
+
       },
       axiosdata:{},
       data4: 
@@ -64,18 +70,15 @@ export default {
       ]
     }
   },
+  // components:{page1},
   mounted(){
-    // this.tabs.clabel='page2'
-    // this.tabs.label=['abc','hahah']
-    this.tabs = {
-      clabel:'page2',
-      label:['abc','haha'],
-      testarr:[]
-    }
+
+    this.tabs = this.$store.state.showtabs
   },
   methods: {
     storetest(){
-      this.$store.dispatch('storetest','abcdefg')
+      this.$store.dispatch('storetest','abcdefg') //异步
+      
     },
     loadData (item, callback) {
       item.loading = true;
@@ -83,12 +86,10 @@ export default {
     },
     labeltest(){
       let ran = String(Math.ceil((Math.random()*10000)))
-      this.tabs.label.push('push'+ran)
-      this.tabs.clabel = 'push'+ran
+      // this.tabs.label.push('push'+ran)
+      // this.tabs.clabel = 'push'+ran
+      this.$store.commit('newtab',ran)
 
-      // this.arr.push('push')
-      // this.clabel = 'push'
-      console.log(this.tabs)
     },
     buttontest(){
       request({
@@ -127,23 +128,12 @@ export default {
         
       }
       test()
-      // axios({
-      // method:'get',
-      // // url:'https://bird.ioliu.cn/v1?url=http://api.webscan.cc',
-      // url:'https://bird.ioliu.cn/v1?url=http://api.webscan.cc?action=query&ip=110.88.128.246',
-      // // params:{
       
-      // // },
-      // // formdata,
-      // timeout:1000
-      // }).then(res=>{
-      //   console.log(res)
-      // }).catch(err =>{
-      //   console.log(err)
-      // })
     },
-    closelabel(index){
-      this.tabs.label.splice(index,1)
+    closelabel(label){
+      // this.tabs.label.splice(index,1)
+      // console.log(label)
+      this.$store.commit('deletetab',label)
     }
   }
 }

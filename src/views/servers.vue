@@ -125,7 +125,7 @@ export default {
         if(res.data.message == null){this.$Message.info('未查找到相关数据')}
         this.sdata = res.data.message
       }).catch(err =>{
-
+        this.$Message.error('错误'.err)
       })
     },
     show(index){ //详情按钮

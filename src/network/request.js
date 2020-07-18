@@ -1,5 +1,5 @@
 import axios from 'axios'
-
+// let ran = String(Math.ceil((Math.random()*10000)))
 export function request(config){
   // return Promise((resolve,reject) => {
 

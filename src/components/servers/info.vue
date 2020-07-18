@@ -21,7 +21,7 @@
         设备端口信息
         <div slot="content">
           <p v-for="(tab,index) in message.wiring" :key=tab+index >
-          {{tab.port}}----{{tab.ip}}----------{{tab.name}}--{{tab.port2}}---{{tab.type}}--{{tab.remark}}</p>
+          {{tab.port}}----{{tab.ip}}----------<a @click="services">{{tab.name}}</a>--{{tab.port2}}---{{tab.type}}--{{tab.remark}}</p>
         </div>
       </Panel>
       <Panel name="3">
@@ -60,6 +60,9 @@ export default {
     console.log(this.message)
   },
   methods: {
+    services(){
+      console.log(this.message)
+    }
     
   }
 }
