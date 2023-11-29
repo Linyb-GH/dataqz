@@ -9,13 +9,20 @@ const state:StateData = {
     is_login:false,
     user_id:'',
     token:'',
-    name:'',
-    
+    name:''
   },
   tabs:{
     tabcurrent:'HomePane',
     tablists:[]
-  }
+  },
+  page_data:[{
+    manu:{},
+    micon:{},
+    sider:[{
+      icon:'string',sidername:'string',sidermem:[{
+        itemname:'string',url:'string'}]
+    }]
+  }],
 }
 export default createStore({
 // const store = createStore({

@@ -11,11 +11,20 @@ interface UserData{
   token:string,
   name:string
 }
+
 interface StateData{
   user:UserData,
   tabs:{
     tabcurrent:string
     tablists:tabdata[]
-  }
+  },
+  page_data:[{
+    manu:object
+    micon:object
+    sider:[{
+      icon:string,sidername:string,sidermem:[{
+        itemname:string,url:string}]
+    }]
+  }],
 }
-export {StateData,UserData,tabdata}
+export {StateData,UserData,tabdata,}

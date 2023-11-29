@@ -22,7 +22,6 @@ export default {
     // localStorage.setItem('Authorization',JSON.stringify(userinfo));
     // console.log(state)
   },
-  
   Tab_NewTab:(state:StateData,arg:tabdata) => {
     const isexist = state.tabs.tablists.filter((item) => {
       return item.label == arg.label
@@ -38,5 +37,6 @@ export default {
   },
   Tab_ClickTab:(state:StateData,tab:string) => {
     state.tabs.tabcurrent = tab 
-  }
+  },
+
 }

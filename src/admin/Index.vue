@@ -1,11 +1,11 @@
 <template>
   <!-- <div>admin index page</div> -->
-  <Layout >
+  <Layout v-if="isloading">
     <Header class="headersty" >
       <Menu mode="horizontal" @on-select = "headerselected" theme="light" class="menusty" >
         <a href="/" class="layout-logo"></a>
         <div class="headerclass">
-          <MenuItem v-for="(value,index) in pdata" :key="index" :name= "index">
+          <MenuItem v-for="(value,index) in xdata" :key="index" :name= "index">
             <Icon :type="value.micon" />
             {{value.manu}}
           </MenuItem>
@@ -27,30 +27,13 @@
           </Dropdown>
         </div>
       </Menu>
-      <!-- <Modal
-        v-model="modalmodifypsw"
-        title="修改密码"
-        :loading="loading"
-        @on-ok="asyncOK">
-        <Form ref="modifypsw" :model="PswData"  :label-width="80">
-          <FormItem label="旧密码" prop="oldpsw">
-            <Input type="password" v-model="PswData.oldpsw" placeholder="输入旧密码"></Input>
-          </FormItem>
-          <FormItem label="新密码" prop="newpsw">
-            <Input type="password" v-model="PswData.newpsw" placeholder="输入新密码"></Input>
-          </FormItem>
-          <FormItem label="新密码" prop="newpsw2">
-            <Input type="password" v-model="PswData.newpsw2" placeholder="再次输入新密码"></Input>
-          </FormItem>
-        </Form>
-      </Modal> -->
     </Header>
     <Layout>
       <Sider hide-trigger :style="{background: '#fff'}">
         <Menu @on-select="siderslected" width="auto" >
-          <Submenu v-for="(item,index) in siderlist" :key="index" :name=item.sidername>
+          <Submenu v-for="(item,index) in xdata[siderindex].sider" :key="index" :name=item.sidername>
             <template #title>
-                <Icon type="ios-paper" />
+                <Icon :type="item.icon" />
                 {{ item.sidername }}
             </template>
             <MenuItem v-for="(i,index) in item.sidermem" :key="index" :name=i.url>{{ i.itemname }}</MenuItem>
@@ -71,63 +54,67 @@
       </Layout>
     </Layout>
   </Layout>
+  <Spin fix v-else>
+    <Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
+    <div>Loading</div>
+  </Spin>
 </template>
 
 <script lang="ts">
 import router from '@/router'
 import store from '@/store'
+import { Auth } from '@/router/interface'
 import Admintabs from '@/admin/tabs/Index.vue'
 import { defineComponent,ref } from 'vue'
 import { Input } from 'view-ui-plus';
 export default defineComponent({
   setup() {
-    //Sider栏和Header栏的数据
-    const pdata = ref(
-      [
-        {manu:'后台管理',micon:'ios-navigate',sider:[
-          {icon:'ios-navigate',sidername:'设备运维',sidermem:[
-            {itemname:'网站修改',url:'/admin/hello'},{itemname:'设备上下架',url:'/admin/test'},{itemname:'关机与重启',url:'/admin/devicesrestart'}]
-          },
-          {icon:'ios-keypad',sidername:'网络变更',sidermem:[
-            {itemname:'ABC',url:'/admin/netwiring'},{itemname:'专线接入',url:'/admin/netwiringZX'}]
-          }]
-        },
-        {manu:'机房管理2',micon:'ios-navigate',sider:[
-          {icon:'ios-navigate',sidername:'设备运维',sidermem:[
-            {itemname:'设备报修',url:'/admin/devicesrepair'},{itemname:'设备上下架',url:'/admin/devicesmoved'},{itemname:'关机与重启',url:'/admin/devicesrestart'}]
-          },
-          {icon:'ios-navigate',sidername:'设备运维2',sidermem:[
-            {itemname:'设备报修2',url:'/admin/devicesrepair'},{itemname:'设备上下架',url:'/admin/devicesmoved'},{itemname:'关机与重启',url:'/admin/devicesrestart'}]
-          },
-          {icon:'ios-keypad',sidername:'网络变更',sidermem:[
-            {itemname:'设备布线',url:'/admin/netwiring'},{itemname:'专线接入',url:'/admin/netwiringZX'}]
-          }]
-        },
-      ]
-    )
+    let isloading = ref(false)
+
+    let siderindex = ref(0)
+
     //当前Tab的信息
     const tabs = ref(store.state.tabs)
     //header变更后的sider数据
-    const siderlist = ref(pdata.value[0].sider)
+    
 
     const siderslected=((val:string)=>{
       router.push({path:val})
       console.log(val)
     })
     const headerselected = ((val:number)=>{
-      siderlist.value = pdata.value[val].sider
+      siderindex.value = val
+      // siderlist.value = pdata.value[val].sider
     })
    
 
-    return {siderslected,headerselected,pdata,siderlist,tabs}
+    return {siderslected,headerselected,isloading,tabs,siderindex}
   },
   components:{Admintabs},
   data(){
     return {
-      user:store.state.user
+      user:store.state.user,
+      xdata:store.state.page_data
     }
   },
+  mounted(){
+    this.init()
+
+  },
   methods:{
+    async init(){
+      this.GetPageAuth()
+    },
+    async GetPageAuth(){
+      let x = new Auth()
+      let y = await x.GetPageAuth()
+      if(y){
+        this.xdata = y
+        this.isloading = true
+      }else{
+        this.$Message.error('发生错误！')
+      }
+    },
     onclick(tab:string){
       store.commit('Tab_ClickTab',tab)
     },
@@ -141,46 +128,45 @@ export default defineComponent({
       if(val == 'modifypsw'){
         let oldpsw:string,newpsw:string,newpsw2:string
         this.$Modal.confirm({
-            render: (h:any) => {
-              return [
+          render: (h:any) => {
+            return [
+            h( Input, 
+              {
+                size: "large",
+                // modelValue: oldpsw,
+                style:'margin:10px 10px;',
+                type:'password',
+                autofocus: true,
+                placeholder: '请输入旧密码',
+                'onInput': (event:any) => {
+                  oldpsw = event.target.value;
+                }
+              }),
               h( Input, {
-                    size: "large",
-                    // modelValue: oldpsw,
-                    style:'margin:10px 10px;',
-                    type:'password',
-                    autofocus: true,
-                    placeholder: '请输入旧密码',
-                    'onInput': (event:any) => {
-                      oldpsw = event.target.value;
-                    }
-                }),
-                h( Input, {
-                    size: "large",
-                    // modelValue: newpsw,
-                    style:'margin:10px 10px;',
-                    type:'password',
-                    password:true,
-                    autofocus: true,
-                    placeholder: '请输入新密码',
-                    'onInput': (event:any) => {
-                      newpsw = event.target.value;
-                    }
-                }),
-                h( Input, {
-                    size: "large",
-                    // modelValue: newpsw2,
-                    style:'margin:10px 10px;',
-                    type:'password',
-                    password:true,
-                    autofocus: true,
-                    placeholder: '再次输入新密码',
-                    'onInput': (event:any) => {
-                      newpsw2 = event.target.value;
-                    }
-                }),
-              ]
-              
-            },
+                size: "large",
+                style:'margin:10px 10px;',
+                type:'password',
+                password:true,
+                autofocus: true,
+                placeholder: '请输入新密码',
+                'onInput': (event:any) => {
+                  newpsw = event.target.value;
+                }
+              }),
+              h( Input, {
+                size: "large",
+                style:'margin:10px 10px;',
+                type:'password',
+                password:true,
+                autofocus: true,
+                placeholder: '再次输入新密码',
+                'onInput': (event:any) => {
+                  newpsw2 = event.target.value;
+                }
+              }),
+            ]
+            
+          },
           onOk:()=>{
             if(oldpsw == ''){
               return
@@ -194,10 +180,7 @@ export default defineComponent({
           },
         })
         console.log('modifypsw func')
-        
-        // if(newpsw != newpsw2){
-        //   this.$Message.error('两次输入的新密码不一致！')
-        // }
+
       }
     }
   }

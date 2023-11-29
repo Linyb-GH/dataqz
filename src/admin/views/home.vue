@@ -40,7 +40,7 @@ export default defineComponent({
     return{
       movieList: [
         {
-            name: 'The Shawshank Redemption',
+            name: 'The Shawshank Redemption 123',
             url: 'https://movie.douban.com/subject/1292052/',
             rate: 9.6
         },
