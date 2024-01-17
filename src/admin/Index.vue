@@ -20,6 +20,7 @@
             </a>
             <template #list>
               <DropdownMenu >
+                <DropdownItem name='accountinfo'>账号信息</DropdownItem>
                 <DropdownItem name='logout'>注销</DropdownItem>
                 <DropdownItem name='modifypsw'>修改密码</DropdownItem>
               </DropdownMenu>
@@ -99,7 +100,6 @@ export default defineComponent({
   },
   mounted(){
     this.init()
-
   },
   methods:{
     async init(){
@@ -112,7 +112,8 @@ export default defineComponent({
         this.xdata = y
         this.isloading = true
       }else{
-        this.$Message.error('发生错误！')
+        this.$router.push({name:'Login'})
+        this.$Message.warning('访问超时，请重新登录！')
       }
     },
     onclick(tab:string){
@@ -124,6 +125,9 @@ export default defineComponent({
     account(val:string){
       if(val == 'logout'){
         store.commit('USER_LOGINOUT')  
+      }
+      if(val == 'accountinfo'){
+        store.commit('Tab_NewTab',{id:'',label:'账号信息',component:'TabAccount',data:{hh:'xx'}})
       }
       if(val == 'modifypsw'){
         let oldpsw:string,newpsw:string,newpsw2:string
@@ -179,8 +183,6 @@ export default defineComponent({
             console.log(newpsw)
           },
         })
-        console.log('modifypsw func')
-
       }
     }
   }

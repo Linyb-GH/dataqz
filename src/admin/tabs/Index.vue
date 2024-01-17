@@ -4,6 +4,7 @@
 
 <script lang="ts">
 import TabTest from './TabTest.vue'
+import TabAccount from './TabAccount.vue'
 import WebNews from './web/WebNews.vue'
 import { defineComponent } from 'vue'
 
@@ -22,7 +23,7 @@ export default defineComponent({
     })
   },
   components: {
-    TabTest,WebNews
+    TabTest,WebNews,TabAccount
   },
   mounted(){
     let component = this.message.component

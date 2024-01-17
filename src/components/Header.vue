@@ -11,9 +11,6 @@
       <MenuItem name="/news" to="/news?class=news" class="textsyt">
         新闻中心
       </MenuItem>
-      <!-- <MenuItem name="/product" to="/product" class="textsyt">
-        产品中心
-      </MenuItem> -->
       <MenuItem name="/product" to="http://ygyp.dataquanzhou.com/2023/dataquanzhou.html" class="textsyt">
         产品中心
       </MenuItem>

@@ -105,6 +105,7 @@ export default defineComponent ({
 
 }
 .Rightlist{
+  overflow: auto;
   position: relative;
   top:-200px;
   left:25vw ;

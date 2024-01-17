@@ -1,6 +1,6 @@
 <template>
   <div class="homesty">
-    <Header></Header>
+    <Header class="homesty" ></Header>
     <img src="../assets/home/banner.png" class="staticbanner">
     <!-- <a :href="adminurl"><img src="../assets/logo.png"></a> -->
     <div class="rowtow">
@@ -30,7 +30,7 @@
       </div>
       
     </div>
-    <Footer></Footer>
+    <Footer class="homesty"></Footer>
   </div>
 </template>
 

@@ -40,6 +40,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import( '../views/QZJJ/Index.vue'),
     meta:{title:'点击播放',keepAlive:true}
   },
+  
   {
     path: '/admin',
     name: 'Admin',

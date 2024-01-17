@@ -27,6 +27,17 @@ export default class User{
     })
   }
 
+  ProFile(id:string,token:string){
+    return this.req.AdmingetReq(
+      '?s=Dtqz.User.ProFile'
+    ).then((data)=>{
+      return data
+    }).catch((err)=>{
+      console.log(err)
+      return false
+    })
+  }
+
   GetUsers(){
     return this.req.AdmingetReq(
       '?s=Dtqz.User.GetUsers'
