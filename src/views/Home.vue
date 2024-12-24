@@ -70,16 +70,17 @@ export default defineComponent({
     async getNews(){
       let x = new WebFront()
       let y = await x.GetHomeNews('',1)
-      if(y){
-        this.listdata = y 
+      if(y.ret == 200 ){
+        this.listdata = y.data
       }else{
-        this.$Message.error('网络错误')
+        this.$Message.error(y.msg)
       }
+    
     },
     async getRotate(){
       let x = new WebFront()
       let y = await x.GetWebRotate()
-      this.RotateData  = y
+      this.RotateData  = y.data
     }
   }
 })

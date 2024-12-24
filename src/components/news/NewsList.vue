@@ -35,13 +35,13 @@ export default defineComponent({
     async getList(page:number){
       let x = new WebFront()
       let y = await x.GetNewsList(page,'新闻')
-      if(y){
-        this.listdata = y.list
-        this.listnum = y.total
-        // console.log(y)
+      if(y.ret == 200 ){
+        this.listdata = y.data.list
+        this.listnum = y.data.total
       }else{
-        this.$Message.error('网络错误')
+        this.$Message.error(y.msg)
       }
+ 
     },
     turnpage(page:number){
       this.getList(page)

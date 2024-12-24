@@ -104,21 +104,23 @@ export default defineComponent({
     async getChangeList(){
       let x = new Web()
       let y = await x.getWebLBT()
-      if(y){
-        this.rotatelist = y
+      if(y.ret == 200 ){
+        this.rotatelist = y.data
       }else{
-        this.$Message.error('网络错误')
+        this.$Message.error(y.msg)
       }
+    
     },
     async getCoverNews(page:number,limit:number){
       let x = new Web()
       let y = await x.GetWebCovers(page,limit)
-      if(y){
-        this.tabledata = y.list
-        this.pagenum = y.total
+      if(y.ret == 200 ){
+        this.tabledata = y.data.list
+        this.pagenum = y.data.total
       }else{
-        this.$Message.error('网络错误')
+        this.$Message.error(y.msg)
       }
+      
     },
     turnpage(index:number){
       this.getCoverNews(index,10)

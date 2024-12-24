@@ -80,13 +80,13 @@ export default defineComponent({
     async getPageData(page:number,title:string){
       let x = new Process()
       let y = await x.GetMyProcess(page,10,title)
-      if(y){
-        this.TabData.list = y.list
-        this.TabData.total = y.total
-        // this.HistoryProcess = y
+      if(y.ret == 200 ){
+        this.TabData.list = y.data.list
+        this.TabData.total = y.data.total
       }else{
-        this.$Message.error('网络错误')
+        this.$Message.error(y.msg)
       }
+     
     },
     search(){
       this.getPageData(1,this.InputData.search)

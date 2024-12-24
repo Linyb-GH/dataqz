@@ -75,8 +75,8 @@ export default defineComponent({
     async getDealing () {
       let x = new Process()
       let y = await x.GetPendingNode({limit:12})
-      if(y){
-        let dealdata = y.map((item:any)=>{
+      if(y.ret == 200 ){
+        let dealdata = y.data.map((item:any)=>{
           return {
             id_table:item.id_table,
             modal:item.modal,
@@ -84,20 +84,20 @@ export default defineComponent({
             c_time:item.datetime}
         })
         this.dealdata = dealdata
-        // console.log(dealdata)
       }else{
-        this.$Message.error('网络错误')
+        this.$Message.error(y.msg)
       }
 
     },
     async getMyProcess(){
       let x = new Process()
       let y = await x.GetMyProcess(1,12,'')
-      if(y){
-        this.HistoryProcess = y.list
+      if(y.ret == 200 ){
+        this.HistoryProcess = y.data.list
       }else{
-        this.$Message.error('网络错误')
+        this.$Message.error(y.msg)
       }
+
   
       // let req = new NetRequest()
       // req.AdminpostReq(

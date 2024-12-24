@@ -41,18 +41,15 @@ export default defineComponent({
     }
   },
   mounted(){
+    // this.formInline.user = '测试用户'
+    // this.formInline.password = '0okm,lp_'
     // console.log(this.formInline)
     
   },
   methods: {
     
     handleSubmit(name:string) {
-      // console.log(this.$refs[name])
-      // console.log(store.state.user)
-      // const islogin = store.dispatch('is_login').then((ret)=>{
-      //   console.log(ret)
-      //   console.log('handleSubmit')
-      // })
+
       const login = store.dispatch('login',{username:this.formInline.user,password:this.formInline.password})
       login.then((ret)=>{
         if(ret){

@@ -62,12 +62,13 @@ export default defineComponent({
     async getList(page:number){
       let x = new Web()
       let y = await x.getMyGeneral(page,10)
-      if(y){
-        this.tabledata = y.list
-        this.total = y.total
+      if(y.ret == 200 ){
+        this.tabledata = y.data.list
+        this.total = y.data.total
       }else{
-        this.$Message.error('网络错误')
+        this.$Message.error(y.msg)
       }
+     
     },
     turnpage(page:number){
       this.getList(page)

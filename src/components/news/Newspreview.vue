@@ -33,12 +33,13 @@ export default defineComponent({
     async getNews(id:string){
       let x = new Web()
       let y = await x.getNewsbyID(id)
-      if(y){
-        this.pagecontent = y 
-        this.newscon = y.content
+      if(y.ret == 200 ){
+        this.pagecontent = y.data
+        this.newscon = y.data.content
       }else{
-        this.$Message.error('网络错误')
+        this.$Message.error(y.msg)
       }
+      
     },
   }
 })

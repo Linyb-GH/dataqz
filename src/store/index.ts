@@ -9,12 +9,23 @@ const state:StateData = {
     is_login:false,
     user_id:'',
     token:'',
-    name:''
+    name:'',
+    avatar:''
   },
   tabs:{
     tabcurrent:'HomePane',
     tablists:[]
   },
+  notices:{
+    todoList:[{
+      title:'',
+      content:'',
+      tag:'',
+      tagProps:{color:''},
+      read:0
+    }]
+  },
+
   page_data:[{
     manu:{},
     micon:{},
@@ -23,6 +34,8 @@ const state:StateData = {
         itemname:'string',url:'string'}]
     }]
   }],
+  
+  
 }
 export default createStore({
 // const store = createStore({

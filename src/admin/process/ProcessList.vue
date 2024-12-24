@@ -40,11 +40,12 @@ export default defineComponent({
     async getProcessNodes(id:number,modal:string){
       let x = new Process()
       let y = await x.GetProcessNode(id,modal)
-      if(y){
-        this.processtable = y
+      if(y.ret == 200 ){
+        this.processtable = y.data
       }else{
-        this.$Message.error('getProcessNodes 发生错误！')
+        this.$Message.error(y.msg)
       }
+    
     },
     getPageData(){
 

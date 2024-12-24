@@ -20,12 +20,12 @@ export default defineComponent({
     async getContent(mc:string){
       let x = new WebFront()
       let y = await x.GetGeneral(mc)
-      if(y){
-        this.htmlContent = y[0]['content']
-        // console.log(y[0]['content'])
+      if(y.ret == 200 ){
+        this.htmlContent = y.data[0]['content']
       }else{
-        this.$Message.error('网络错误')
+        this.$Message.error(y.msg)
       }
+     
     },
   }
 })

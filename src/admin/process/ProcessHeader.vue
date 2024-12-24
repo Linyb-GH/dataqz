@@ -132,13 +132,20 @@ export default defineComponent({
     async GetUsers(){
       let x = new User()
       let y = await x.GetUsers()
-      if(y){
-        this.modal.users = y.filter((item:any)=>{
+      if(y.ret == 200 ){
+        this.modal.users = y.data.filter((item:any)=>{
           return item.id != store.state.user.user_id
         })
       }else{
-        this.$Message.error('网络错误')
+        this.$Message.error(y.msg)
       }
+      // if(y){
+      //   this.modal.users = y.filter((item:any)=>{
+      //     return item.id != store.state.user.user_id
+      //   })
+      // }else{
+      //   this.$Message.error('网络错误')
+      // }
     },
   },
   props:["message"],

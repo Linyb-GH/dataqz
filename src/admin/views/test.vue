@@ -15,7 +15,7 @@ export default defineComponent({
   },
   methods:{
     btntest(){
-      store.commit('Tab_NewTab',{id:'SelectedPane',label:'xxx',component:'TabTest'})
+      store.commit('Tab_NewTab',{id:'SelectedPane',label:'xxx',component:'TabTest',data:{}})
       console.log(store.state.user)
       // h(hello,{id: 'abc',innerHTML: 'hello'})
       const rq = new NetRequest()

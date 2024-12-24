@@ -50,7 +50,7 @@ export default defineComponent({
     const rq = new NetRequest()
     editorConfig.MENU_CONF = {
       ['uploadImage']: {
-        server: rq.dataurl+'?s=Webserver.Editor.Uploadjpg',
+        server: rq.Netconfig.dataurl+'?s=Webserver.Editor.Uploadjpg',
         meta: {
           path:'/uploads/web'
         },
@@ -141,20 +141,21 @@ export default defineComponent({
     async getList(page:number){
       let w = new Web()
       let w2 = await w.GetMyNews(page)
-      if(w2){
-        this.listnum = w2.total
-        this.tabledata = w2.list
+      if(w2.ret == 200 ){
+        this.listnum = w2.data.total
+        this.tabledata = w2.data.list
       }else{
-        this.$Message.error('网络错误')
+        this.$Message.error(w2.msg)
       }
+    
       let u = new User()
       let u2 = await u.GetUsers()
-      if(u2){
-        this.userlist = u2
+      if(u2.ret == 200 ){
+        this.userlist = u2.data
       }else{
-        this.$Message.error('网络错误')
+        this.$Message.error(u2.msg)
       }
-      console.log('checked')
+     
     },
     coverupload(){
       console.log('coverupload')

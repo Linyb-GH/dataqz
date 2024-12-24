@@ -160,12 +160,12 @@ export default class Web{
   //编辑器上传本体图片接口
   EditorUploadImage(){
     return{
-      server: this.req.dataurl+'?s=Dtqz.Web.EditorUploadImage',
+      server: this.req.Netconfig.dataurl+'?s=Dtqz.Web.EditorUploadImage',
         meta: {
           user_id:this.req.user.user_id,//store.state.user.user_id,
           token:this.req.user.token,//store.state.user.token,
-          path:this.req.path_web,
-          ipaddr:this.req.ipAddr
+          path:this.req.Netconfig.upload_web,
+          ipaddr:this.req.Netconfig.ipAddr
         },
         //最大上传限制 100M
         maxFileSize: 100 * 1024 * 1024,
@@ -175,9 +175,9 @@ export default class Web{
           console.log(`${file.name} 上传失败`, res)
         },
         customInsert(res: any, insertFn: InsertFnType) {  // TS 语法
-      
+
           let dt = res.data
-          console.log(dt)
+          // console.log(dt)
             // 从 res 中找到 url alt href ，然后插入图片
             insertFn(dt.url, dt.alt, dt.href)
             // console.log(res)
@@ -199,15 +199,16 @@ export default class Web{
   }
 
   //文件上传接口
+  //id_table：关联其它表的表ID，modal:分类
   UploadFile(id_table:number,modal:string){
     return{
-        url:this.req.dataurl+'/?s=Dtqz.Web.UploadFile',
+        url:this.req.Netconfig.dataurl+'/?s=Dtqz.Web.UploadFile',
         uploaddata:{
           user_id:this.req.user.user_id,
           token:this.req.user.token,
           id_table,
-          path:this.req.path_web,
-          ipaddr:this.req.ipAddr,
+          path:this.req.Netconfig.upload_web,
+          ipaddr:this.req.Netconfig.ipAddr,
           modal
         }
       }

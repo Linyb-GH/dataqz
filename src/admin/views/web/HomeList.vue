@@ -76,13 +76,13 @@ export default defineComponent({
     async getList(page:number){
       let x = new WebFront()
       let y = await x.GetHomeNews('all',page)
-      if(y){
-        this.tabledata = y.list
-        this.total = y.total
-        console.log(y,'getlist')
+      if(y.ret == 200 ){
+        this.tabledata = y.data.list
+        this.total = y.data.total
       }else{
-        this.$Message.error('网络错误')
+        this.$Message.error(y.msg)
       }
+     
     },
     async topaction(row:{id:number}){
       let x = new Web()

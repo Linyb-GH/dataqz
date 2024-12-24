@@ -4,6 +4,8 @@ import WebFront from "./interface/WebFront"
 import Web from "./interface/Web"
 import User from "./interface/User"
 import Process from "./interface/Process"
+import Devices from './interface/Devices'
+import Projects from './interface/Projects'
 /* 调用例子
 import {xx} from '/interface/xx'
   async getNews(){
@@ -16,5 +18,5 @@ import {xx} from '/interface/xx'
     }
   },
 */
-export {Auth,WebFront,Web,User,Process}
+export {Auth,WebFront,Web,User,Process,Devices,Projects}
 

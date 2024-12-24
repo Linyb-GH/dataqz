@@ -200,15 +200,16 @@ export default defineComponent({
    
       let x = new Web()
       let y = await x.getGeneralInfo(id)
-      if(y){
-        this.btnstatus(y.process_status)
-        this.pagestatus.nodeuser = y.id_auditor
-        this.pagestatus.ProcessStatus = y.process_status
-        this.tabdata = y
+      if(y.ret == 200 ){
+        this.btnstatus(y.data.process_status)
+        this.pagestatus.nodeuser = y.data.id_auditor
+        this.pagestatus.ProcessStatus = y.data.process_status
+        this.tabdata = y.data
         this.valueHtml = this.tabdata.content
       }else{
-        this.$Message.error('发生错误！')
+        this.$Message.error(y.msg)
       }
+     
       this.getTableID(parseInt(id))
       this.getModalFiles(this.tabdata.id)
     },
@@ -230,10 +231,10 @@ export default defineComponent({
     async getModalFiles(id_table:number){
       let x = new Web()
       let y = await x.getModalFiles(id_table,'general')
-      if(y){
-        this.filelist = y
+      if(y.ret == 200 ){
+        this.filelist = y.data
       }else{
-        this.$Message.error('网络错误')
+        this.$Message.error(y.msg)
       }
     },
     actions(emitdata:{action:string,data:{nextnode:number,opinions:string}}){
@@ -258,15 +259,17 @@ export default defineComponent({
       this.tabdata.content = this.valueHtml
       let x = new Web()
       let y = await x.newGeneral(this.tabdata)
-      if(y){
+      if(y.ret == 200 ){
         this.uploaddisable = false
         this.getTableID(y)
         if(!this.$route.query.id){
-          this.$router.replace(this.$route.fullPath+'?id='+y)
+          this.$router.replace(this.$route.fullPath+'?id='+y.data)
         }    
         this.$Message.success('操作完成！')
-      }else{//如果内容没变更，则进入该判断
+      }else{
+        this.$Message.error(y.msg)
       }
+     
     },
     async submit(modaldata:{nextnode:number,opinions:string}){
       await this.fsave()

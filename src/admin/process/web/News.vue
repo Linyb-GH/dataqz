@@ -259,15 +259,16 @@ export default defineComponent({
       if(!this.$route.query.id){ this.btnstatus('创建'); return} 
       let x = new Web()
       let y = await x.getNewsbyID(id)
-      if(y){
-        this.article = y
-        this.pagestatus.ProcessStatus = y.process_status
-        this.pagestatus.nodeuser = y.review
-        this.btnstatus(y.process_status)
+      if(y.ret == 200 ){
+        this.article = y.data
+        this.pagestatus.ProcessStatus = y.data.process_status
+        this.pagestatus.nodeuser = y.data.review
+        this.btnstatus(y.data.process_status)
         this.valueHtml = this.article.content
       }else{
-        this.$Message.error('发生错误！')
+        this.$Message.error(y.msg)
       }
+ 
       this.getPageByID(parseInt(id))
     },
     uploadsuccess(ret:upreturn){
@@ -290,10 +291,10 @@ export default defineComponent({
     async getModalFiles(id_article:number){
       let x = new Web()
       let y = await x.getModalFiles(id_article,'news')
-      if(y){
-        this.filelist = y
+      if(y.ret == 200 ){
+        this.filelist = y.data
       }else{
-        this.$Message.error('网络错误')
+        this.$Message.error(y.msg)
       }
     },
     DataCheck(){
@@ -325,16 +326,16 @@ export default defineComponent({
       this.article.content = this.valueHtml
       let x = new Web()
       let y = await x.NewArticle(this.article)
-      if(y){
+      if(y.ret == 200 ){
         this.uploaddisable = false
-        this.getPageByID(y)
+        this.getPageByID(y.data)
         if(!this.$route.query.id){
-          this.$router.replace(this.$route.fullPath+'?id='+y)
+          this.$router.replace(this.$route.fullPath+'?id='+y.data)
         }
-        console.log(y,'yyy')
+       
         this.$Message.success('操作完成！')
       }else{
-        return
+        this.$Message.error(y.msg)
       }
     },
     async submit(modaldata:{nextnode:number,opinions:string}){

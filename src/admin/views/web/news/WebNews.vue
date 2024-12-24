@@ -63,12 +63,13 @@ export default defineComponent({
     async getList(page:number){
       let x = new Web()
       let y = await x.GetArticleList(page)
-      if(y){
-        this.tabledata = y['list']
-        this.listnum = y['total']
+      if(y.ret == 200 ){
+        this.tabledata = y.data['list']
+        this.listnum = y.data['total']
       }else{
-        this.$Message.error('网络错误')
+        this.$Message.error(y.msg)
       }
+    
     },
   }
 })
@@ -79,6 +80,7 @@ export default defineComponent({
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
+  min-width: 900px;
   /* border: #dcdee2 1px solid; */
 }
 .tablesty{ 

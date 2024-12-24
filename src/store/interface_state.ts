@@ -7,9 +7,10 @@ interface tabdata{
 }
 interface UserData{
   is_login:boolean
-  user_id:string,
-  token:string,
+  user_id:string
+  token:string
   name:string
+  avatar:string
 }
 
 interface StateData{
@@ -18,6 +19,16 @@ interface StateData{
     tabcurrent:string
     tablists:tabdata[]
   },
+  notices:{
+    todoList:[
+      { title:string,
+      content:string,
+      tag:string,
+      tagProps: {color: string},
+      read: number}
+    ]
+  },
+
   page_data:[{
     manu:object
     micon:object

@@ -37,13 +37,13 @@ export default defineComponent({
     async getNews(id:number){
       let x = new WebFront()
       let y = await x.GetNewsInfo(id)
-      if(y){
-        this.pagecontent = y 
-        this.newscon = y.content
-        console.log(y)
+      if(y.ret == 200 ){
+        this.pagecontent = y.data
+        this.newscon = y.data.content
       }else{
-        this.$Message.error('网络错误')
+        this.$Message.error(y.msg)
       }
+      
     },
   }
 })

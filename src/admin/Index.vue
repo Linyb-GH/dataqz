@@ -1,5 +1,6 @@
 <template>
-  <!-- <div>admin index page</div> -->
+  <PrjTask @actions="NTactions" v-if="modalstatus.taskid != ''" :message="{id:modalstatus.taskid,id_todo:modalstatus.id_todo}" >
+  </PrjTask>
   <Layout v-if="isloading">
     <Header class="headersty" >
       <Menu mode="horizontal" @on-select = "headerselected" theme="light" class="menusty" >
@@ -11,8 +12,23 @@
           </MenuItem>
         </div>
         <div class="accountsty">
-          <Avatar style="background-color: #87d068" icon="ios-person" />
-          <span style="margin:1vw">您好</span>
+          <Badge :count="unreadTodo" />
+          <Notification  @on-clear="handleClear" >
+            <NotificationTab title="待办" name="todo" :count="unreadTodo" :loading="todoLoading" :scroll-to-load="false">
+              <div  @click ="handleNotice(item)"  v-for="(item, index) in todoList">
+                <NotificationItem  
+                  :key="index"
+                  :title="item.title"
+                  :content="item.content"
+                  :tag="item.tag"
+                  :tag-props="item.tagProps"
+                  :read="item.read"/>
+              </div>
+            </NotificationTab>
+          </Notification>
+
+          <Avatar :src=user.avatar style="background-color: #87d068;margin-left: 10px;margin-bottom: 5px;" icon="ios-person" />
+          <span style="margin: 10px;">您好</span>
           <Dropdown  @on-click="account">
             <a >
               {{ user.name }}
@@ -64,38 +80,39 @@
 <script lang="ts">
 import router from '@/router'
 import store from '@/store'
-import { Auth } from '@/router/interface'
+import { Auth,User } from '@/router/interface'
 import Admintabs from '@/admin/tabs/Index.vue'
 import { defineComponent,ref } from 'vue'
 import { Input } from 'view-ui-plus';
+import PrjTask from '@/admin/views/prj/modal/prjmytasks.vue'
 export default defineComponent({
   setup() {
     let isloading = ref(false)
-
     let siderindex = ref(0)
 
     //当前Tab的信息
     const tabs = ref(store.state.tabs)
-    //header变更后的sider数据
-    
 
+    //header变更后的sider数据
     const siderslected=((val:string)=>{
       router.push({path:val})
-      console.log(val)
+      store.commit('Tab_ClickTab','HomePane')
     })
     const headerselected = ((val:number)=>{
       siderindex.value = val
       // siderlist.value = pdata.value[val].sider
     })
-   
-
     return {siderslected,headerselected,isloading,tabs,siderindex}
   },
-  components:{Admintabs},
+  components:{Admintabs,PrjTask},
   data(){
     return {
       user:store.state.user,
-      xdata:store.state.page_data
+      xdata:store.state.page_data,
+      todoList: [{id:'',title:'',content:'',tag:'',tagProps:{color:''},read:1}],
+      todoLoading: false,
+      password_c:{username:'',oldpsw:'',newpsw:''},
+      modalstatus:{taskid:'',id_todo:''}
     }
   },
   mounted(){
@@ -103,24 +120,77 @@ export default defineComponent({
   },
   methods:{
     async init(){
+      this.Initialization()
       this.GetPageAuth()
+      this.GetTodoList()
+      this.todoList = []
+    },
+    async Initialization(){
+      let x = new Auth()
+      let y = await x.Initialization()
+      if(y.ret == '200'){
+      }else{
+        this.$Message.error('Initialization初始化出错！')
+      }
+    },
+    async GetTodoList(){
+      let x = new Auth()
+      let y = await x.GetTodoList()
+      if(y.data){
+        this.todoList = y.data
+        console.log(y.data,'GetTodoList')
+      }else{
+        console.log(y,'GetTodoList')
+        this.todoList = []
+      }
     },
     async GetPageAuth(){
       let x = new Auth()
       let y = await x.GetPageAuth()
-      if(y){
-        this.xdata = y
-        this.isloading = true
+      if(y.ret == 200){
+        if(y.data){
+          this.xdata = y.data
+          this.isloading = true
+        }else{
+          this.$router.push({name:'Login'})
+          this.$Message.warning(y.msg)
+        }
       }else{
+        console.log(y)
         this.$router.push({name:'Login'})
-        this.$Message.warning('访问超时，请重新登录！')
+        this.$Message.warning('登录失败，接口请求失败！')
       }
+    },
+    handleNotice(tab:any){
+      this.modalstatus.taskid = tab.id_task
+      this.modalstatus.id_todo = tab.id
+    },
+    NTactions(emit:{action:string,data:string}){
+      if(emit.action == 'closed'){
+        this.modalstatus.taskid = ''
+        this.modalstatus.id_todo = ''
+      }
+      if(emit.action == 'done'){
+        this.GetTodoList()
+      }
+    },
+    handleClear(){
+      this.todoList = []
     },
     onclick(tab:string){
       store.commit('Tab_ClickTab',tab)
     },
     closelabel(tab:string){
       store.commit('Tab_DeleteTab',tab)
+    },
+    async modifyPassword(){
+      let x = new User()
+      let y = await x.Modifypsw(this.password_c)
+      if(y.data){
+        this.$Message.success('修改成功，请记好新密码！')
+      }else{
+        this.$Message.error('修改出错！')
+      }
     },
     account(val:string){
       if(val == 'logout'){
@@ -130,20 +200,20 @@ export default defineComponent({
         store.commit('Tab_NewTab',{id:'',label:'账号信息',component:'TabAccount',data:{hh:'xx'}})
       }
       if(val == 'modifypsw'){
-        let oldpsw:string,newpsw:string,newpsw2:string
+        let m = {username:store.state.user.name,oldpsw:'',newpsw:''}
+        let newpswcheck:string
         this.$Modal.confirm({
           render: (h:any) => {
             return [
             h( Input, 
               {
                 size: "large",
-                // modelValue: oldpsw,
                 style:'margin:10px 10px;',
                 type:'password',
                 autofocus: true,
                 placeholder: '请输入旧密码',
                 'onInput': (event:any) => {
-                  oldpsw = event.target.value;
+                  m.oldpsw = event.target.value;
                 }
               }),
               h( Input, {
@@ -154,7 +224,7 @@ export default defineComponent({
                 autofocus: true,
                 placeholder: '请输入新密码',
                 'onInput': (event:any) => {
-                  newpsw = event.target.value;
+                  m.newpsw = event.target.value;
                 }
               }),
               h( Input, {
@@ -165,45 +235,55 @@ export default defineComponent({
                 autofocus: true,
                 placeholder: '再次输入新密码',
                 'onInput': (event:any) => {
-                  newpsw2 = event.target.value;
+                  newpswcheck = event.target.value;
                 }
               }),
             ]
             
           },
-          onOk:()=>{
-            if(oldpsw == ''){
-              return
+          onOk:()=>{ 
+            if(m.oldpsw == '' || m.newpsw == ''){
+              this.$Message.error('修改出错');return
             }
-            if(newpsw == newpsw2){
-
+            if(m.newpsw == newpswcheck){
+              this.password_c = m
+              this.modifyPassword()
             }else{
               this.$Message.error('两次输入的新密码不一致！')
             }
-            console.log(newpsw)
           },
         })
       }
     }
-  }
+  },
+  computed: {
+            
+    unreadTodo() {
+      let unread = 0;
+      this.todoList.forEach(item => {
+        if (!item.read) unread++;
+      });
+      return unread;
+    }
+  },
 })
 </script>
 <style  scoped >
+
 .headersty{
-  padding:0;
+  padding:5px;
+  min-width: 900px;
   background-color: aliceblue;
-  /* border: solid 1px yellow; */
 }
 .menusty{
-  /* background: #d7dde4; */
   display: flex;
   flex-wrap: nowrap;
 }
 .layout-logo{
-  /* border: blueviolet 1px solid; */
+
   width: 160px;
   height: 53px;
-  /* background-color: gray; */
+
   background-image: url('../assets/dtqz.png');
   border-radius: 3px;
   position: relative;
@@ -219,14 +299,13 @@ export default defineComponent({
   padding: 0 5px 10px;
 }
 .headerclass{
-  /* height: 30px; */
-  /* width: 420px; */
   margin: 0 auto;
   margin-left: 40px;
-  /* border: springgreen solid 1px; */
 }
 .accountsty{
-  /* border: red 1px solid; */
+
+  /* border: 1px solid black; */
+
   margin-right: 50px;
 }
 </style>
